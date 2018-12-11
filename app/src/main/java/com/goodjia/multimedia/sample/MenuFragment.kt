@@ -39,13 +39,13 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             Task.ACTION_IMAGE,
             "https://media.wired.com/photos/598e35994ab8482c0d6946e0/master/w_1164,c_limit/phonepicutres-TA.jpg"
         ),
+        Task(Task.ACTION_YOUTUBE, "https://www.youtube.com/watch?v=kQ0WqJmqkLA"),
         Task(Task.ACTION_VIDEO, "http://techslides.com/demos/sample-videos/small.mp4"),
         Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
         Task(
             Task.ACTION_YOUTUBE,
             "https://www.youtube.com/watch?v=7gXB9VdYG7c"
         ),
-        Task(Task.ACTION_YOUTUBE, "https://www.youtube.com/watch?v=kQ0WqJmqkLA"),
         Task(Task.ACTION_IMAGE, "https://amazingpict.com/wp-content/uploads/2015/04/lake-view-sunset.jpg"),
         Task(
             Task.ACTION_IMAGE,
@@ -63,20 +63,26 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
     private var totalSource: Int = 0
     private var progress: Int = 0
-
+    private var multimediaPlayerFragment: MultimediaPlayerFragment? = null
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnMultimediaPlayer -> {
-                val fragment = MultimediaPlayerFragment.newInstance(tasks)
+                multimediaPlayerFragment = MultimediaPlayerFragment.newInstance(tasks)
 
-                fragment.animationCallback = object : MediaFragment.AnimationCallback {
+                multimediaPlayerFragment?.animationCallback = object : MediaFragment.AnimationCallback {
                     override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
                         return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
                         else MoveAnimation.create(MoveAnimation.RIGHT, enter, DURATION).fading(1.0f, 0.3f)
                     }
                 }
 
-                fragment.playerListener = object : MultimediaPlayerFragment.PlayerListener {
+                multimediaPlayerFragment?.playerListener = object : MultimediaPlayerFragment.PlayerListener {
+                    override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
+                        val volume = Random().nextInt(100)
+                        Log.d(TAG, "onPrepared $volume")
+                        playerFragment.setVolume(volume)
+                    }
+
                     override fun onChange(position: Int, task: Task) {
                         Log.d(TAG, "onChange $position, task $task")
                     }
@@ -86,7 +92,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     }
                 }
 
-                start(fragment)
+                start(multimediaPlayerFragment)
             }
             R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://www.youtube.com/watch?v=IduYAx4ptNU"))
         }

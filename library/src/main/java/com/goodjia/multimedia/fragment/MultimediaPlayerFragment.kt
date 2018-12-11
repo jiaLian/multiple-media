@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
+import com.goodjia.multimedia.MediaController
 import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.UserVisibleChangedBroadcastReceiver
@@ -15,11 +16,11 @@ import com.goodjia.multimedia.fragment.component.ImageFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
 import com.goodjia.multimedia.fragment.component.VideoFragment
 import com.goodjia.multimedia.fragment.component.YoutubeFragment
-import me.yokeyword.fragmentation.SupportFragment
 import java.util.*
 
 
-class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, MediaFragment.AnimationCallback {
+class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, MediaFragment.AnimationCallback,
+    MediaController {
 
     companion object {
         private val TAG = MultimediaPlayerFragment::class.java.simpleName
@@ -45,7 +46,7 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
 
     var tasks: ArrayList<Task>? = null
     protected var mediaIndex = 0
-
+    private var mediaFragment: MediaFragment? = null
 
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
@@ -124,8 +125,16 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
         }
     }
 
+    override fun onPrepared() {
+        playerListener?.onPrepared(this)
+    }
+
     override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         return animationCallback?.animation(transit, enter, nextAnim)
+    }
+
+    override fun setVolume(volumePercent: Int) {
+        mediaFragment?.setVolume(volumePercent)
     }
 
     protected fun startTask() {
@@ -141,7 +150,6 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
     }
 
     private fun openMediaFragment() {
-        var fragment: SupportFragment? = null
         val task = tasks!![mediaIndex]
         @Task.Companion.Action val action = task.action
 
@@ -149,15 +157,15 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
             Task.ACTION_VIDEO -> {
                 Log.d(TAG, "ACTION_VIDEO: " + task.toString())
                 Log.d(TAG, "ACTION_VIDEO: " + task.getFileUri())
-                fragment = VideoFragment.newInstance(id, task.getFileUri())
+                mediaFragment = VideoFragment.newInstance(id, task.getFileUri())
             }
-            Task.ACTION_IMAGE -> fragment = ImageFragment.newInstance(task.getFileUri(), task.playtime)
-            Task.ACTION_YOUTUBE -> fragment = YoutubeFragment.newInstance(task.url, false, id)
+            Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(task.getFileUri(), task.playtime)
+            Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(task.url, false, id)
         }
 
-        if (fragment != null) {
+        if (mediaFragment != null) {
             try {
-                childFragmentManager.beginTransaction().replace(R.id.media_container, fragment).commit()
+                childFragmentManager.beginTransaction().replace(R.id.media_container, mediaFragment!!).commit()
                 playerListener?.onChange(mediaIndex, task)
                 mediaIndex++
             } catch (e: Exception) {
@@ -167,9 +175,12 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
         }
     }
 
+
     interface PlayerListener {
         fun onChange(position: Int, task: Task)
 
         fun onError(position: Int, task: Task, action: Int, message: String)
+
+        fun onPrepared(playerFragment: MultimediaPlayerFragment)
     }
 }

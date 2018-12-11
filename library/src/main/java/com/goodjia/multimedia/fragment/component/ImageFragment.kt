@@ -16,6 +16,7 @@ import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.setResizeImage
 
 class ImageFragment : MediaFragment() {
+
     companion object {
         fun newInstance(uri: Uri, delaySecond: Int = Task.DEFAULT_PLAYTIME): ImageFragment {
             val args = Bundle()

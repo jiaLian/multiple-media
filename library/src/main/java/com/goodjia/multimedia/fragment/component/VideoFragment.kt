@@ -5,16 +5,17 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.UserVisibleChangedBroadcastReceiver
-import com.sprylab.android.widget.TextureVideoView
+import kotlinx.android.synthetic.main.fragment_video.*
 
-class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
+    MediaPlayer.OnPreparedListener {
+
     companion object {
         fun newInstance(id: String, uri: Uri): VideoFragment {
             val args = Bundle()
@@ -26,11 +27,8 @@ class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPl
         }
     }
 
-    private val videoView: TextureVideoView by lazy {
-        TextureVideoView(context)
-    }
-
-    private var id: String? = null
+    private var mediaPlayer: MediaPlayer? = null
+    var id: String? = null
     private val visibleChangedBroadcastReceiver = object : UserVisibleChangedBroadcastReceiver() {
         override fun onVisibleChanged(isVisible: Boolean, id: String) {
             if (this@VideoFragment.id == id && !isVisible && videoView.isPlaying) {
@@ -57,15 +55,12 @@ class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPl
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return videoView
+        return inflater.inflate(R.layout.fragment_video, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val params = videoView.layoutParams as FrameLayout.LayoutParams
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT
-        params.height = ViewGroup.LayoutParams.MATCH_PARENT
-        params.gravity = Gravity.CENTER
+        videoView.setOnPreparedListener(this)
         videoView.setOnCompletionListener(this)
         videoView.setOnErrorListener(this)
     }
@@ -96,6 +91,16 @@ class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPl
     override fun onError(mediaPlayer: MediaPlayer, i: Int, i1: Int): Boolean {
         mediaCallback?.onError(Task.ACTION_VIDEO, uri?.toString() ?: "")
         return true
+    }
+
+    override fun onPrepared(mp: MediaPlayer?) {
+        mediaPlayer = mp
+        mediaCallback?.onPrepared()
+    }
+
+    override fun setVolume(volumePercent: Int) {
+        val value = volumePercent / 100f
+        mediaPlayer?.setVolume(value, value)
     }
 
     fun play() {

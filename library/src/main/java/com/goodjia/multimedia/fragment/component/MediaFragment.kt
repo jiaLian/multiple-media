@@ -2,10 +2,11 @@ package com.goodjia.multimedia.fragment.component
 
 import android.net.Uri
 import android.view.animation.Animation
+import com.goodjia.multimedia.MediaController
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.fragment.BaseFragment
 
-abstract class MediaFragment : BaseFragment() {
+abstract class MediaFragment : BaseFragment(), MediaController {
     companion object {
         const val KEY_DELAY_SECOND = "delay_second"
         const val KEY_URI = "uri"
@@ -29,6 +30,9 @@ abstract class MediaFragment : BaseFragment() {
         )
     }
 
+    override fun setVolume(volumePercent: Int) {
+    }
+
     interface AnimationCallback {
         fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation?
     }
@@ -37,5 +41,7 @@ abstract class MediaFragment : BaseFragment() {
         fun onCompletion(action: Int, message: String)
 
         fun onError(action: Int, message: String)
+
+        fun onPrepared()
     }
 }

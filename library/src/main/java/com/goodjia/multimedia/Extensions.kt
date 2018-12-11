@@ -1,11 +1,16 @@
 package com.goodjia.multimedia
 
 import android.net.Uri
+import android.support.annotation.IntRange
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.common.ResizeOptions
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import java.util.regex.Pattern
+
+interface MediaController {
+    fun setVolume(@IntRange(from = 0, to = 100) volumePercent: Int)
+}
 
 fun SimpleDraweeView.setResizeImage(uri: Uri?) {
     setController(uri)

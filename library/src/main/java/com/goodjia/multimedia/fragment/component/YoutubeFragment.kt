@@ -15,6 +15,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayerView
 import com.pierfrancescosoffritti.androidyoutubeplayer.player.listeners.AbstractYouTubePlayerListener
 
 class YoutubeFragment : MediaFragment() {
+
     companion object {
         const val KEY_UI = "showUI"
 
@@ -53,6 +54,7 @@ class YoutubeFragment : MediaFragment() {
     private val youTubePlayerListener = object : AbstractYouTubePlayerListener() {
         override fun onReady() {
             load(url)
+            mediaCallback?.onPrepared()
         }
 
         override fun onError(error: PlayerConstants.PlayerError) {
@@ -115,6 +117,10 @@ class YoutubeFragment : MediaFragment() {
     override fun onStop() {
         super.onStop()
         LocalBroadcastManager.getInstance(context!!).unregisterReceiver(visibleChangedBroadcastReceiver)
+    }
+
+    override fun setVolume(volumePercent: Int) {
+        youTubePlayer?.setVolume(volumePercent)
     }
 
     fun release() {
