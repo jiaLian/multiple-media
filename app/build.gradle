@@ -12,7 +12,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.goodjia.multimedia.sample"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -44,6 +44,6 @@ dependencies {
     implementation 'com.liulishuo.filedownloader:library:1.7.5'
     implementation 'com.github.maning0303:MNProgressHUD:V1.0.5'
     implementation 'org.jetbrains.anko:anko-commons:0.10.8'
-    implementation 'com.goodjia:multimedia:0.0.2'
+    implementation 'com.goodjia:multimedia:0.0.3'
 //    implementation project(':library')
 }

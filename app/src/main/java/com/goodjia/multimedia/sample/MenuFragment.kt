@@ -39,7 +39,15 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             Task.ACTION_IMAGE,
             "https://media.wired.com/photos/598e35994ab8482c0d6946e0/master/w_1164,c_limit/phonepicutres-TA.jpg"
         ),
+        Task(
+            Task.ACTION_VIDEO,
+            "http://cowork.coretronic.com/virtualshelf/r/admin/v1/videofiles/1/20181108/1541648105968ZSL6BFM.mp4"
+        ),
         Task(Task.ACTION_YOUTUBE, "https://www.youtube.com/watch?v=kQ0WqJmqkLA"),
+        Task(
+            Task.ACTION_VIDEO,
+            "http://cowork.coretronic.com/virtualshelf/r/admin/v1/videofiles/1/20181108/1541648064414Z0JKTAN.mp4"
+        ),
         Task(Task.ACTION_VIDEO, "http://techslides.com/demos/sample-videos/small.mp4"),
         Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
         Task(
@@ -67,7 +75,8 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnMultimediaPlayer -> {
-                multimediaPlayerFragment = MultimediaPlayerFragment.newInstance(tasks)
+                multimediaPlayerFragment =
+                        MultimediaPlayerFragment.newInstance(tasks/*, layoutContent = ViewGroup.LayoutParams.WRAP_CONTENT*/)
 
                 multimediaPlayerFragment?.animationCallback = object : MediaFragment.AnimationCallback {
                     override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {

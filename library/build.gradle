@@ -3,8 +3,8 @@ apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-def verCode = 1
-def verName = "0.0.2"
+def verCode = 3
+def verName = "0.0.3"
 
 androidExtensions {
     experimental = true
@@ -13,7 +13,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode verCode
         versionName verName

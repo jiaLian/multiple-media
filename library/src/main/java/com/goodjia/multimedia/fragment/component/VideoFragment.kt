@@ -13,22 +13,26 @@ import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.UserVisibleChangedBroadcastReceiver
 import kotlinx.android.synthetic.main.fragment_video.*
 
-class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
+
+open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
     MediaPlayer.OnPreparedListener {
 
     companion object {
-        fun newInstance(id: String, uri: Uri): VideoFragment {
+        const val KEY_LAYOUT_CONTENT = "layout_content"
+        fun newInstance(id: String, uri: Uri, layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT): VideoFragment {
             val args = Bundle()
             args.putString(UserVisibleChangedBroadcastReceiver.KEY_ID, id)
             args.putParcelable(MediaFragment.KEY_URI, uri)
+            args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
             val fragment = VideoFragment()
             fragment.arguments = args
             return fragment
         }
     }
 
+    private var layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     private var mediaPlayer: MediaPlayer? = null
-    var id: String? = null
+    private var id: String? = null
     private val visibleChangedBroadcastReceiver = object : UserVisibleChangedBroadcastReceiver() {
         override fun onVisibleChanged(isVisible: Boolean, id: String) {
             if (this@VideoFragment.id == id && !isVisible && videoView.isPlaying) {
@@ -42,9 +46,11 @@ class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPl
         if (savedInstanceState == null) {
             uri = arguments!!.getParcelable(MediaFragment.KEY_URI)
             id = arguments!!.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
+            layoutContent = arguments!!.getInt(KEY_LAYOUT_CONTENT)
         } else {
             uri = arguments!!.getParcelable(MediaFragment.KEY_URI)
             id = savedInstanceState.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
+            layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT)
         }
     }
 
@@ -60,6 +66,10 @@ class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPl
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val layoutParams = videoView.layoutParams
+        layoutParams.width = layoutContent
+        layoutParams.height = layoutContent
+
         videoView.setOnPreparedListener(this)
         videoView.setOnCompletionListener(this)
         videoView.setOnErrorListener(this)

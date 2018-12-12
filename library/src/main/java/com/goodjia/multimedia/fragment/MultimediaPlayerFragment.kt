@@ -19,7 +19,7 @@ import com.goodjia.multimedia.fragment.component.YoutubeFragment
 import java.util.*
 
 
-class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, MediaFragment.AnimationCallback,
+open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, MediaFragment.AnimationCallback,
     MediaController {
 
     companion object {
@@ -30,18 +30,24 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
 
         @JvmStatic
         @JvmOverloads
-        fun newInstance(tasks: List<Task>?, id: String = DEFAULT_ID): MultimediaPlayerFragment {
+        fun newInstance(
+            tasks: List<Task>?,
+            id: String = DEFAULT_ID,
+            layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
+        ): MultimediaPlayerFragment {
             val args = Bundle()
             args.putString(UserVisibleChangedBroadcastReceiver.KEY_ID, id)
             if (tasks != null) {
                 args.putParcelableArrayList(KEY_TASKS, ArrayList(tasks))
             }
+            args.putInt(VideoFragment.KEY_LAYOUT_CONTENT, layoutContent)
             val fragment = MultimediaPlayerFragment()
             fragment.arguments = args
             return fragment
         }
     }
 
+    private var layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
     protected lateinit var id: String
 
     var tasks: ArrayList<Task>? = null
@@ -63,9 +69,11 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
         if (savedInstanceState == null) {
             tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
             id = arguments!!.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
+            layoutContent = arguments!!.getInt(VideoFragment.KEY_LAYOUT_CONTENT)
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
             id = savedInstanceState.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
+            layoutContent = savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT)
         }
     }
 
@@ -157,7 +165,7 @@ class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, Me
             Task.ACTION_VIDEO -> {
                 Log.d(TAG, "ACTION_VIDEO: " + task.toString())
                 Log.d(TAG, "ACTION_VIDEO: " + task.getFileUri())
-                mediaFragment = VideoFragment.newInstance(id, task.getFileUri())
+                mediaFragment = VideoFragment.newInstance(id, task.getFileUri(), layoutContent)
             }
             Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(task.getFileUri(), task.playtime)
             Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(task.url, false, id)
