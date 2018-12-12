@@ -46,11 +46,11 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
         if (savedInstanceState == null) {
             uri = arguments!!.getParcelable(MediaFragment.KEY_URI)
             id = arguments!!.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
-            layoutContent = arguments!!.getInt(KEY_LAYOUT_CONTENT)
+            layoutContent = arguments!!.getInt(KEY_LAYOUT_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT)
         } else {
-            uri = arguments!!.getParcelable(MediaFragment.KEY_URI)
+            uri = savedInstanceState.getParcelable(MediaFragment.KEY_URI)
             id = savedInstanceState.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
-            layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT)
+            layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
 

@@ -69,11 +69,12 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         if (savedInstanceState == null) {
             tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
             id = arguments!!.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
-            layoutContent = arguments!!.getInt(VideoFragment.KEY_LAYOUT_CONTENT)
+            layoutContent = arguments!!.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
             id = savedInstanceState.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
-            layoutContent = savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT)
+            layoutContent =
+                    savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
 
