@@ -86,6 +86,10 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                 }
 
                 multimediaPlayerFragment?.playerListener = object : MultimediaPlayerFragment.PlayerListener {
+                    override fun onLoopCompletion() {
+                        Log.d(TAG, "onLoopCompletion")
+                    }
+
                     override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
                         val volume = Random().nextInt(100)
                         Log.d(TAG, "onPrepared $volume")

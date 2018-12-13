@@ -120,6 +120,9 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     override fun onCompletion(action: Int, message: String) {
         Log.d(TAG, "onCompletion: action $action, $message")
+        if (mediaIndex == tasks!!.size) {
+            playerListener?.onLoopCompletion()
+        }
         if (isVisible) {
             startTask()
         }
@@ -153,7 +156,6 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
         if (mediaIndex > tasks!!.size - 1) {
             mediaIndex = 0
-
         }
         openMediaFragment()
     }
@@ -191,5 +193,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         fun onError(position: Int, task: Task, action: Int, message: String)
 
         fun onPrepared(playerFragment: MultimediaPlayerFragment)
+
+        fun onLoopCompletion()
     }
 }
