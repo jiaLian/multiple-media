@@ -15,21 +15,17 @@ import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.setResizeImage
 
-class ImageFragment : MediaFragment() {
+class ImageFragment : PlayTimeMediaFragment() {
 
     companion object {
-        fun newInstance(uri: Uri, delaySecond: Int = Task.DEFAULT_PLAYTIME): ImageFragment {
+        fun newInstance(uri: Uri, playtime: Int = Task.DEFAULT_PLAYTIME): ImageFragment {
             val args = Bundle()
             args.putParcelable(KEY_URI, uri)
-            args.putInt(KEY_DELAY_SECOND, delaySecond)
+            args.putInt(KEY_PLAY_TIME, playtime)
             val fragment = ImageFragment()
             fragment.arguments = args
             return fragment
         }
-    }
-
-    private val completionRunnable: Runnable = Runnable {
-        mediaCallback?.onCompletion(Task.ACTION_IMAGE, uri?.toString() ?: "")
     }
 
     private val draweeView: SimpleDraweeView by lazy {
@@ -51,17 +47,14 @@ class ImageFragment : MediaFragment() {
         }
         if (savedInstanceState == null) {
             uri = arguments!!.getParcelable(KEY_URI)
-            delaySecond = arguments!!.getInt(KEY_DELAY_SECOND)
         } else {
             uri = savedInstanceState.getParcelable(KEY_URI)
-            delaySecond = savedInstanceState.getInt(KEY_DELAY_SECOND)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(KEY_URI, uri)
-        outState.putInt(KEY_DELAY_SECOND, delaySecond)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -75,11 +68,5 @@ class ImageFragment : MediaFragment() {
         params.width = ViewGroup.LayoutParams.MATCH_PARENT
         params.height = ViewGroup.LayoutParams.MATCH_PARENT
         draweeView.setResizeImage(uri)
-        getView()!!.postDelayed(completionRunnable, delaySecond * 1000L)
-    }
-
-    override fun onDestroyView() {
-        view?.removeCallbacks(completionRunnable)
-        super.onDestroyView()
     }
 }

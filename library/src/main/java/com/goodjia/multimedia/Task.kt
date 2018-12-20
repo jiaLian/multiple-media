@@ -1,6 +1,7 @@
 package com.goodjia.multimedia
 
 import android.net.Uri
+import android.os.Bundle
 import android.os.Parcelable
 import android.support.annotation.IntDef
 import android.support.annotation.IntRange
@@ -11,10 +12,12 @@ import java.io.Serializable
 @Parcelize
 data class Task @JvmOverloads constructor(
     @Action var action: Int = ACTION_UNKNOWN,
-    var url: String,
+    var url: String? = null,
     var filePath: String? = null,
     var description: String? = null,
-    @IntRange(from = 0) var playtime: Int = DEFAULT_PLAYTIME
+    @IntRange(from = 0) var playtime: Int = DEFAULT_PLAYTIME,
+    val className: String? = null,
+    val bundle: Bundle? = null
 ) : Parcelable, Serializable {
 
     companion object {
@@ -22,8 +25,9 @@ data class Task @JvmOverloads constructor(
         const val ACTION_VIDEO = 0
         const val ACTION_YOUTUBE = 1
         const val ACTION_IMAGE = 2
+        const val ACTION_CUSTOM = 3
 
-        @IntDef(ACTION_UNKNOWN, ACTION_VIDEO, ACTION_YOUTUBE, ACTION_IMAGE)
+        @IntDef(ACTION_UNKNOWN, ACTION_VIDEO, ACTION_YOUTUBE, ACTION_IMAGE, ACTION_CUSTOM)
         @Retention(AnnotationRetention.SOURCE)
         annotation class Action
 
@@ -36,19 +40,18 @@ data class Task @JvmOverloads constructor(
             if (file.isFile) {
                 return Uri.fromFile(file)
             }
-
         }
-        return Uri.parse(if (url.isNotEmpty()) url else "")
+        return Uri.parse(if (url?.isNotEmpty() == true) url else "")
     }
 
     override fun equals(obj: Any?): Boolean {
         if (obj !is Task) {
             return false
         }
-        return url == obj.url
+        return if (url != null) url == obj.url else className != null && className == obj.className && bundle == obj.bundle
     }
 
     override fun hashCode(): Int {
-        return url.hashCode()
+        return if (url != null) url.hashCode() else className.hashCode() + bundle.hashCode()
     }
 }

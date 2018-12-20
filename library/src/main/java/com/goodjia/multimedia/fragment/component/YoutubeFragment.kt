@@ -21,7 +21,7 @@ class YoutubeFragment : MediaFragment() {
 
         @JvmStatic
         @JvmOverloads
-        fun newInstance(url: String, showUI: Boolean = true, id: String = "only"): YoutubeFragment {
+        fun newInstance(url: String?, showUI: Boolean = true, id: String = "only"): YoutubeFragment {
             val args = Bundle()
             args.putString(UserVisibleChangedBroadcastReceiver.KEY_ID, id)
             args.putString(MediaFragment.KEY_URI, url)
@@ -32,7 +32,7 @@ class YoutubeFragment : MediaFragment() {
         }
     }
 
-    private lateinit var url: String
+    private var url: String? = null
 
     private var showUI: Boolean = false
 
@@ -127,8 +127,10 @@ class YoutubeFragment : MediaFragment() {
         youTubePlayerView.release()
     }
 
-    fun load(url: String) {
-        val videoId = url.extractVideoIdFromUrl()
-        youTubePlayer?.loadVideo(videoId, 0f)
+    fun load(url: String?) {
+        val videoId = url?.extractVideoIdFromUrl()
+        if (videoId?.isNotEmpty() == true) {
+            youTubePlayer?.loadVideo(videoId, 0f)
+        }
     }
 }

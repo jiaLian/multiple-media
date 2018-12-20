@@ -36,8 +36,27 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
     private val tasks = arrayListOf(
         Task(
+            Task.ACTION_CUSTOM, playtime = 3,
+            className = CustomTaskFragment::class.java.name,
+            bundle = CustomTaskFragment.bundle("Custom 1")
+        ),
+
+        Task(
+            Task.ACTION_CUSTOM, playtime = 3,
+            /*Error custom class sample*/
+            className = MenuFragment::class.java.name,
+            bundle = CustomTaskFragment.bundle("Custom 1")
+        ),
+        Task(
             Task.ACTION_IMAGE,
-            "https://media.wired.com/photos/598e35994ab8482c0d6946e0/master/w_1164,c_limit/phonepicutres-TA.jpg"
+            "https://media.wired.com/photos/598e35994ab8482c0d6946e0/master/w_1164,c_limit/phonepicutres-TA.jpg",
+            playtime = 3
+        ),
+        Task(
+            Task.ACTION_CUSTOM,
+            playtime = 10,
+            className = CustomTaskFragment::class.java.name,
+            bundle = CustomTaskFragment.bundle("Custom 2")
         ),
         Task(
             Task.ACTION_VIDEO,
@@ -100,11 +119,10 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                         Log.d(TAG, "onChange $position, task $task")
                     }
 
-                    override fun onError(position: Int, task: Task, action: Int, message: String) {
+                    override fun onError(position: Int, task: Task, action: Int, message: String?) {
                         Log.d(TAG, "onError $position, task $task, error $message")
                     }
                 }
-
                 start(multimediaPlayerFragment)
             }
             R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://www.youtube.com/watch?v=IduYAx4ptNU"))

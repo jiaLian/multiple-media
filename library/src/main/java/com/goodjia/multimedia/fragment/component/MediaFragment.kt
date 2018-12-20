@@ -8,7 +8,7 @@ import com.goodjia.multimedia.fragment.BaseFragment
 
 abstract class MediaFragment : BaseFragment(), MediaController {
     companion object {
-        const val KEY_DELAY_SECOND = "delay_second"
+        const val KEY_PLAY_TIME = "play_time"
         const val KEY_URI = "uri"
     }
 
@@ -20,7 +20,7 @@ abstract class MediaFragment : BaseFragment(), MediaController {
     }
     protected var uri: Uri? = null
 
-    protected var delaySecond: Int = Task.DEFAULT_PLAYTIME
+    protected var playtime: Int = Task.DEFAULT_PLAYTIME
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
         return animationCallback?.animation(transit, enter, nextAnim) ?: super.onCreateAnimation(
@@ -38,9 +38,9 @@ abstract class MediaFragment : BaseFragment(), MediaController {
     }
 
     interface MediaCallback {
-        fun onCompletion(action: Int, message: String)
+        fun onCompletion(action: Int, message: String?)
 
-        fun onError(action: Int, message: String)
+        fun onError(action: Int, message: String?)
 
         fun onPrepared()
     }

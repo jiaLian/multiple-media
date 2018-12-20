@@ -118,7 +118,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         playerListener = null
     }
 
-    override fun onCompletion(action: Int, message: String) {
+    override fun onCompletion(action: Int, message: String?) {
         Log.d(TAG, "onCompletion: action $action, $message")
         if (mediaIndex == tasks!!.size) {
             playerListener?.onLoopCompletion()
@@ -128,7 +128,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         }
     }
 
-    override fun onError(action: Int, message: String) {
+    override fun onError(action: Int, message: String?) {
         Log.d(TAG, "onError: action $action, $message")
         val position = if (mediaIndex == 0) tasks!!.size - 1 else mediaIndex - 1
         playerListener?.onError(position, tasks!![position], action, message)
@@ -164,25 +164,33 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         val task = tasks!![mediaIndex]
         @Task.Companion.Action val action = task.action
 
-        when (action) {
-            Task.ACTION_VIDEO -> {
-                Log.d(TAG, "ACTION_VIDEO: " + task.toString())
-                Log.d(TAG, "ACTION_VIDEO: " + task.getFileUri())
-                mediaFragment = VideoFragment.newInstance(id, task.getFileUri(), layoutContent)
-            }
-            Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(task.getFileUri(), task.playtime)
-            Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(task.url, false, id)
-        }
+        try {
+            when (action) {
+                Task.ACTION_VIDEO -> mediaFragment = VideoFragment.newInstance(id, task.getFileUri(), layoutContent)
 
-        if (mediaFragment != null) {
-            try {
+                Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(task.getFileUri(), task.playtime)
+
+                Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(task.url, false, id)
+
+                Task.ACTION_CUSTOM -> {
+                    val clz = Class.forName(task.className)
+                    val bundle = task.bundle ?: Bundle()
+                    bundle.putInt(MediaFragment.KEY_PLAY_TIME, task.playtime)
+                    mediaFragment = clz.newInstance() as MediaFragment?
+                    mediaFragment?.arguments = bundle
+                }
+            }
+            if (mediaFragment != null) {
                 childFragmentManager.beginTransaction().replace(R.id.media_container, mediaFragment!!).commit()
                 playerListener?.onChange(mediaIndex, task)
                 mediaIndex++
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } else {
+                mediaIndex++
+                onError(action, "Media Fragment is null $task")
             }
-
+        } catch (e: Exception) {
+            mediaIndex++
+            onError(action, "open Media Fragment failed $task")
         }
     }
 
@@ -190,7 +198,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     interface PlayerListener {
         fun onChange(position: Int, task: Task)
 
-        fun onError(position: Int, task: Task, action: Int, message: String)
+        fun onError(position: Int, task: Task, action: Int, message: String?)
 
         fun onPrepared(playerFragment: MultimediaPlayerFragment)
 
