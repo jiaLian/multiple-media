@@ -78,11 +78,6 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         }
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        UserVisibleChangedBroadcastReceiver.sendUserVisibleBroadcast(context!!, !hidden, id)
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelableArrayList(KEY_TASKS, tasks)
@@ -93,23 +88,17 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         return inflater.inflate(R.layout.fragment_multimedia_player, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         LocalBroadcastManager.getInstance(context!!).registerReceiver(
             visibleChangedBroadcastReceiver,
             IntentFilter(UserVisibleChangedBroadcastReceiver.INTENT_ACTION_VISIBLE)
         )
+        startTask()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        if (isVisible) {
-            startTask()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         LocalBroadcastManager.getInstance(context!!).unregisterReceiver(visibleChangedBroadcastReceiver)
     }
 
@@ -123,18 +112,14 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         if (mediaIndex == tasks!!.size) {
             playerListener?.onLoopCompletion()
         }
-        if (isVisible) {
-            startTask()
-        }
+        startTask()
     }
 
     override fun onError(action: Int, message: String?) {
         Log.d(TAG, "onError: action $action, $message")
         val position = if (mediaIndex == 0) tasks!!.size - 1 else mediaIndex - 1
         playerListener?.onError(position, tasks!![position], action, message)
-        if (isVisible) {
-            startTask()
-        }
+        startTask()
     }
 
     override fun onPrepared() {
@@ -188,8 +173,12 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 mediaIndex++
                 onError(action, "Media Fragment is null $task")
             }
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+            mediaIndex++
         } catch (e: Exception) {
             mediaIndex++
+            e.printStackTrace()
             onError(action, "open Media Fragment failed $task")
         }
     }

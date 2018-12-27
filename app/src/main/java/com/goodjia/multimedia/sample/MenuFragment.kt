@@ -43,7 +43,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
         Task(
             Task.ACTION_CUSTOM, playtime = 3,
-            /*Error custom class sample*/
+//            Error custom class sample
             className = MenuFragment::class.java.name,
             bundle = CustomTaskFragment.bundle("Custom 1")
         ),
