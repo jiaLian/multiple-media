@@ -13,10 +13,17 @@ abstract class MediaFragment : BaseFragment(), MediaController {
     }
 
     protected val mediaCallback: MediaCallback? by lazy {
-        parentFragment as MediaCallback?
+        try {
+            parentFragment as MediaCallback?
+        } catch (e: Exception) {
+       null
+        }
     }
     protected val animationCallback: AnimationCallback? by lazy {
-        parentFragment as AnimationCallback?
+        try {
+            parentFragment as AnimationCallback?
+        } catch (e: Exception) {
+        null}
     }
     protected var uri: Uri? = null
 
