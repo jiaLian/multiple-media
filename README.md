@@ -3,7 +3,7 @@
 
 # Multiple Media Component
 一個可以使用圖片、影片、Youtube來源及Custom fragment的播放器。
-將圖片、影片、Youbtube打包成一個fragment的方式進行播放器的輪播。
+將圖片、影片、Youtube打包成一個fragment的方式進行播放器的輪播。
 
 # 如何使用
 
@@ -33,7 +33,7 @@ tasks = arrayListOf(
         ),
         Task(
             Task.ACTION_VIDEO,
-            "http://cowork.coretronic.com/virtualshelf/r/admin/v1/videofiles/1/20181108/1541648105968ZSL6BFM.mp4"
+            "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4"
         ),
         Task(Task.ACTION_YOUTUBE, "https://www.youtube.com/watch?v=kQ0WqJmqkLA")
         )
