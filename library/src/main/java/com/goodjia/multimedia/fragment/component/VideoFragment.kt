@@ -65,8 +65,8 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
     }
 
     override fun onDestroyView() {
+        videoView?.stopPlayback()
         super.onDestroyView()
-        videoView.stopPlayback()
     }
 
     override fun onCompletion(mp: MediaPlayer) {
@@ -90,20 +90,20 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
 
     fun play() {
         uri.apply {
-            videoView.setVideoURI(this)
-            videoView.start()
+            videoView?.setVideoURI(this)
+            videoView?.start()
         }
     }
 
     override fun start() {
-        videoView.start()
+        videoView?.start()
     }
 
     override fun pause() {
-        videoView.pause()
+        videoView?.pause()
     }
 
     override fun stop() {
-        videoView.stopPlayback()
+        videoView?.stopPlayback()
     }
 }
