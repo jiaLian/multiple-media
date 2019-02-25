@@ -3,10 +3,14 @@ package com.goodjia.multimedia.fragment.component
 import android.os.Bundle
 import android.view.View
 import com.goodjia.multimedia.Task
+import kotlin.random.Random
 
 abstract class PlayTimeMediaFragment : MediaFragment() {
     private val completionRunnable: Runnable = Runnable {
-        mediaCallback?.onCompletion(Task.ACTION_CUSTOM, javaClass.simpleName)
+        mediaCallback?.onCompletion(
+            if (javaClass.simpleName == ImageFragment.javaClass.simpleName) Task.ACTION_IMAGE else Task.ACTION_CUSTOM,
+            javaClass.simpleName
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,11 +29,23 @@ abstract class PlayTimeMediaFragment : MediaFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getView()!!.postDelayed(completionRunnable, playtime * 1000L)
+        start()
     }
 
     override fun onDestroyView() {
-        view?.removeCallbacks(completionRunnable)
+        stop()
         super.onDestroyView()
+    }
+
+    override fun start() {
+        this.view?.postDelayed(completionRunnable, playtime * 1000L)
+    }
+
+    override fun stop() {
+        view?.removeCallbacks(completionRunnable)
+    }
+
+    override fun pause() {
+        stop()
     }
 }

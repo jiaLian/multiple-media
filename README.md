@@ -2,17 +2,17 @@
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # Multiple Media Component
-一個可以使用圖片、影片、Youtube來源及Custom fragment的播放器。
-將圖片、影片、Youtube打包成一個fragment的方式進行播放器的輪播。
+The library can play photo, video, youtube and custom fragment.
+It is fragment player.
 
-# 如何使用
+# How to Use
 
-**1. 项目下app的build.gradle中依赖：**
+**1. app/build.gradle**
 ````gradle
-implementation 'com.goodjia:multimedia:0.0.8'
+implementation 'com.goodjia:multimedia:0.0.9'
 ````
 
-**2. Task（工作任務），建立任務清單**
+**2. Task, create task list**
 ````kotlin
 tasks = arrayListOf(
         Task(
@@ -41,10 +41,10 @@ tasks = arrayListOf(
 
 **3. Start MultimediaPlayerFragment**
 ````kotlin
-//影片來源Match parent 
+//Video source size: Match parent 
 /*val multimediaPlayerFragment = 
                MultimediaPlayerFragment.newInstance(tasks, layoutContent = ViewGroup.LayoutParams.MATCH_PARENT)*/
-//影片來源依據來源size置中
+//Video source size: Wrap content (center)
 val multimediaPlayerFragment = 
                MultimediaPlayerFragment.newInstance(tasks)
                 //animationCallback 切換動畫

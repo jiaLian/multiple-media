@@ -1,8 +1,6 @@
 package com.goodjia.multimedia.fragment
 
-import android.content.IntentFilter
 import android.os.Bundle
-import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +9,6 @@ import android.view.animation.Animation
 import com.goodjia.multimedia.MediaController
 import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
-import com.goodjia.multimedia.UserVisibleChangedBroadcastReceiver
 import com.goodjia.multimedia.fragment.component.ImageFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
 import com.goodjia.multimedia.fragment.component.VideoFragment
@@ -26,17 +23,14 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         private val TAG = MultimediaPlayerFragment::class.java.simpleName
 
         const val KEY_TASKS = "tasks"
-        const val DEFAULT_ID = "only_one"
 
         @JvmStatic
         @JvmOverloads
         fun newInstance(
             tasks: List<Task>?,
-            id: String = DEFAULT_ID,
             layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
         ): MultimediaPlayerFragment {
             val args = Bundle()
-            args.putString(UserVisibleChangedBroadcastReceiver.KEY_ID, id)
             if (tasks != null) {
                 args.putParcelableArrayList(KEY_TASKS, ArrayList(tasks))
             }
@@ -48,7 +42,6 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     private var layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
-    protected lateinit var id: String
 
     var tasks: ArrayList<Task>? = null
     protected var mediaIndex = 0
@@ -56,32 +49,22 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
-    private val visibleChangedBroadcastReceiver = object : UserVisibleChangedBroadcastReceiver() {
-        override fun onVisibleChanged(isVisible: Boolean, id: String) {
-            if (isVisible) {
-                startTask()
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
-            id = arguments!!.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
             layoutContent = arguments!!.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
-            id = savedInstanceState.getString(UserVisibleChangedBroadcastReceiver.KEY_ID)
             layoutContent =
-                    savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelableArrayList(KEY_TASKS, tasks)
-        outState.putString(UserVisibleChangedBroadcastReceiver.KEY_ID, id)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -90,16 +73,17 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     override fun onResume() {
         super.onResume()
-        LocalBroadcastManager.getInstance(context!!).registerReceiver(
-            visibleChangedBroadcastReceiver,
-            IntentFilter(UserVisibleChangedBroadcastReceiver.INTENT_ACTION_VISIBLE)
-        )
         startTask()
     }
 
-    override fun onPause() {
-        super.onPause()
-        LocalBroadcastManager.getInstance(context!!).unregisterReceiver(visibleChangedBroadcastReceiver)
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            mediaFragment?.pause()
+        } else {
+            mediaFragment?.start()
+        }
+        Log.d(TAG, "onHiddenChanged $hidden")
     }
 
     override fun onDestroyView() {
@@ -134,10 +118,21 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         mediaFragment?.setVolume(volumePercent)
     }
 
+    override fun start() {
+        mediaFragment?.start()
+    }
+
+    override fun pause() {
+        mediaFragment?.pause()
+    }
+
+    override fun stop() {
+        mediaFragment?.stop()
+    }
+
     protected fun startTask() {
-        if (tasks == null || tasks!!.size == 0) {
-            return
-        }
+        if (isHidden || tasks == null || tasks!!.size == 0) return
+
 
         if (mediaIndex > tasks!!.size - 1) {
             mediaIndex = 0
@@ -151,11 +146,11 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
         try {
             when (action) {
-                Task.ACTION_VIDEO -> mediaFragment = VideoFragment.newInstance(id, task.getFileUri(), layoutContent)
+                Task.ACTION_VIDEO -> mediaFragment = VideoFragment.newInstance(task.getFileUri(), layoutContent)
 
                 Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(task.getFileUri(), task.playtime)
 
-                Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(task.url, false, id)
+                Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(task.url, false)
 
                 Task.ACTION_CUSTOM -> {
                     val clz = Class.forName(task.className)

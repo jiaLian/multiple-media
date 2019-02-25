@@ -10,6 +10,9 @@ import java.util.regex.Pattern
 
 interface MediaController {
     fun setVolume(@IntRange(from = 0, to = 100) volumePercent: Int)
+    fun start()
+    fun pause()
+    fun stop()
 }
 
 fun SimpleDraweeView.setResizeImage(uri: Uri?) {

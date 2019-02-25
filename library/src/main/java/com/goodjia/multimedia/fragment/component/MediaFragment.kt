@@ -16,14 +16,15 @@ abstract class MediaFragment : BaseFragment(), MediaController {
         try {
             parentFragment as MediaCallback?
         } catch (e: Exception) {
-       null
+            null
         }
     }
     protected val animationCallback: AnimationCallback? by lazy {
         try {
             parentFragment as AnimationCallback?
         } catch (e: Exception) {
-        null}
+            null
+        }
     }
     protected var uri: Uri? = null
 
