@@ -95,7 +95,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         when (v?.id) {
             R.id.btnMultimediaPlayer -> {
                 multimediaPlayerFragment =
-                        MultimediaPlayerFragment.newInstance(tasks/*, layoutContent = ViewGroup.LayoutParams.WRAP_CONTENT*/)
+                    MultimediaPlayerFragment.newInstance(tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/)
 
                 multimediaPlayerFragment?.animationCallback = object : MediaFragment.AnimationCallback {
                     override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {

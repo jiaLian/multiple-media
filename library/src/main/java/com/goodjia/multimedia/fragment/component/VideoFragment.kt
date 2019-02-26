@@ -15,7 +15,7 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
     MediaPlayer.OnPreparedListener {
     companion object {
         const val KEY_LAYOUT_CONTENT = "layout_content"
-        fun newInstance( uri: Uri, layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT): VideoFragment {
+        fun newInstance(uri: Uri, layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT): VideoFragment {
             val args = Bundle()
             args.putParcelable(MediaFragment.KEY_URI, uri)
             args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
@@ -25,17 +25,17 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
         }
     }
 
-    private var layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
+    private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
     private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             uri = arguments!!.getParcelable(MediaFragment.KEY_URI)
-            layoutContent = arguments!!.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutContent = arguments!!.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
         } else {
             uri = savedInstanceState.getParcelable(MediaFragment.KEY_URI)
-            layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
     }
 
@@ -53,7 +53,6 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
         val layoutParams = videoView.layoutParams
         layoutParams.width = layoutContent
         layoutParams.height = layoutContent
-
         videoView.setOnPreparedListener(this)
         videoView.setOnCompletionListener(this)
         videoView.setOnErrorListener(this)

@@ -28,7 +28,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         @JvmOverloads
         fun newInstance(
             tasks: List<Task>?,
-            layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
+            layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
         ): MultimediaPlayerFragment {
             val args = Bundle()
             if (tasks != null) {
@@ -41,7 +41,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         }
     }
 
-    private var layoutContent: Int = ViewGroup.LayoutParams.WRAP_CONTENT
+    private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
 
     var tasks: ArrayList<Task>? = null
     protected var mediaIndex = 0
@@ -54,11 +54,11 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
-            layoutContent = arguments!!.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutContent = arguments!!.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
             layoutContent =
-                savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
     }
 

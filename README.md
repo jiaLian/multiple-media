@@ -41,13 +41,13 @@ tasks = arrayListOf(
 
 **3. Start MultimediaPlayerFragment**
 ````kotlin
-//Video source size: Match parent 
+//Video source size: Wrap content (origin center) 
 /*val multimediaPlayerFragment = 
-               MultimediaPlayerFragment.newInstance(tasks, layoutContent = ViewGroup.LayoutParams.MATCH_PARENT)*/
-//Video source size: Wrap content (center)
+               MultimediaPlayerFragment.newInstance(tasks, ViewGroup.LayoutParams.WRAP_CONTENT)*/
+//Video source size: default fit center
 val multimediaPlayerFragment = 
                MultimediaPlayerFragment.newInstance(tasks)
-                //animationCallback 切換動畫
+                //animationCallback: switch page animation
                 multimediaPlayerFragment?.animationCallback = object : MediaFragment.AnimationCallback {
                     override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
                         return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
