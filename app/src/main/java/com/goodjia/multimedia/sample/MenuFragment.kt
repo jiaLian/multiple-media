@@ -119,13 +119,14 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                         Log.d(TAG, "onChange $position, task $task")
                     }
 
-                    override fun onError(position: Int, task: Task, action: Int, message: String?) {
+                    override fun onError(position: Int, task: Task?, action: Int, message: String?) {
                         Log.d(TAG, "onError $position, task $task, error $message")
                     }
                 }
                 start(multimediaPlayerFragment)
             }
             R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://www.youtube.com/watch?v=IduYAx4ptNU"))
+            R.id.btnPlayerList -> start(PlayerListFragment.newInstance(tasks))
         }
     }
 
@@ -143,6 +144,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         btnMultimediaPlayer.setOnClickListener(this)
         btnYoutube.setOnClickListener(this)
+        btnPlayerList.setOnClickListener(this)
     }
 
     override fun onDestroyView() {

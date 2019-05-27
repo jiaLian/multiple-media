@@ -41,9 +41,11 @@ dependencies {
     }
     kapt 'com.github.hotchemi:permissionsdispatcher-processor:3.3.1'
     implementation 'com.labo.kaji:fragmentanimations:0.1.1'
-    implementation 'com.liulishuo.filedownloader:library:1.7.5'
+    implementation 'com.liulishuo.filedownloader:library:1.7.6'
     implementation 'com.github.maning0303:MNProgressHUD:V1.0.5'
-    implementation 'org.jetbrains.anko:anko-commons:0.10.8'
-//    implementation 'com.goodjia:multimedia:0.0.10'
+    implementation('org.jetbrains.anko:anko:0.10.8') {
+        exclude group: "com.android.support"
+    }
+//    implementation 'com.goodjia:multimedia:0.1.0'
     implementation project(':library')
 }
