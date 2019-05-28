@@ -44,6 +44,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
 
     var tasks: ArrayList<Task>? = null
+    private var customTask: Task? = null
     protected var mediaIndex = 0
     private var mediaFragment: MediaFragment? = null
 
@@ -102,7 +103,12 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     override fun onError(action: Int, message: String?) {
         Log.d(TAG, "onError: action $action, $message")
         val position = if (mediaIndex == 0) tasks!!.size - 1 else mediaIndex - 1
-        playerListener?.onError(position, tasks!![position], action, message)
+        playerListener?.onError(
+            if (customTask == null) position else -1,
+            if (customTask == null) tasks!![position] else customTask,
+            action,
+            message
+        )
         startTask()
     }
 
@@ -140,41 +146,54 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         openMediaFragment()
     }
 
-    private fun openMediaFragment() {
-        val task = tasks!![mediaIndex]
-        @Task.Companion.Action val action = task.action
+    fun play(mediaIndex: Int) {
+        stop()
+        this.mediaIndex = mediaIndex
+        openMediaFragment()
+    }
+
+    fun play(task: Task?) {
+        task ?: return
+        stop()
+        openMediaFragment(task)
+    }
+
+    private fun openMediaFragment(task: Task? = null) {
+        customTask = task
+        val playTask = task ?: tasks!![mediaIndex]
+        @Task.Companion.Action val action = playTask.action
 
         try {
             when (action) {
-                Task.ACTION_VIDEO -> mediaFragment = VideoFragment.newInstance(task.getFileUri(), layoutContent)
+                Task.ACTION_VIDEO -> mediaFragment = VideoFragment.newInstance(playTask.getFileUri(), layoutContent)
 
-                Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(task.getFileUri(), task.playtime)
+                Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(playTask.getFileUri(), playTask.playtime)
 
-                Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(task.url, false)
+                Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(playTask.url, false)
 
                 Task.ACTION_CUSTOM -> {
-                    val clz = Class.forName(task.className)
-                    val bundle = task.bundle ?: Bundle()
-                    bundle.putInt(MediaFragment.KEY_PLAY_TIME, task.playtime)
+                    val clz = Class.forName(playTask.className)
+                    val bundle = playTask.bundle ?: Bundle()
+                    bundle.putInt(MediaFragment.KEY_PLAY_TIME, playTask.playtime)
                     mediaFragment = clz.newInstance() as MediaFragment?
                     mediaFragment?.arguments = bundle
                 }
             }
             if (mediaFragment != null) {
                 childFragmentManager.beginTransaction().replace(R.id.media_container, mediaFragment!!).commit()
-                playerListener?.onChange(mediaIndex, task)
-                mediaIndex++
+                playerListener?.onChange(if (task == null) mediaIndex else -1, playTask)
+                task ?: mediaIndex++
             } else {
-                mediaIndex++
-                onError(action, "Media Fragment is null $task")
+                task ?: mediaIndex++
+                onError(action, "Media Fragment is null $playTask")
             }
         } catch (e: IllegalStateException) {
             e.printStackTrace()
-            mediaIndex++
+            task ?: mediaIndex++
         } catch (e: Exception) {
-            mediaIndex++
             e.printStackTrace()
-            onError(action, "open Media Fragment failed $task")
+            task ?: mediaIndex++
+            onError(action, "open Media Fragment failed $playTask")
         }
     }
 
@@ -182,7 +201,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     interface PlayerListener {
         fun onChange(position: Int, task: Task)
 
-        fun onError(position: Int, task: Task, action: Int, message: String?)
+        fun onError(position: Int, task: Task?, action: Int, message: String?)
 
         fun onPrepared(playerFragment: MultimediaPlayerFragment)
 

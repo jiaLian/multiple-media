@@ -9,7 +9,7 @@ It is fragment player.
 
 **1. app/build.gradle**
 ````gradle
-implementation 'com.goodjia:multimedia:0.0.9'
+implementation 'com.goodjia:multimedia:'0.1.0'
 ````
 
 **2. Task, create task list**
@@ -38,7 +38,6 @@ tasks = arrayListOf(
         Task(Task.ACTION_YOUTUBE, "https://www.youtube.com/watch?v=kQ0WqJmqkLA")
         )
 ````
-
 **3. Start MultimediaPlayerFragment**
 ````kotlin
 //Video source size: Wrap content (origin center) 
@@ -75,6 +74,18 @@ val multimediaPlayerFragment =
                     }
                 }
                 start(multimediaPlayerFragment)
+````
+
+**4. Change Play other task**
+````kotlin
+val otherTask=Task()
+...
+multimediaPlayerFragment?.play(otherTask)
+````
+
+**5. Change play the position of task list**
+````kotlin
+multimediaPlayerFragment?.play(position)
 ````
 
 **.. Start Youtube Fragment**
