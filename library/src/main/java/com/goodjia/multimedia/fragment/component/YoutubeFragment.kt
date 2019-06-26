@@ -100,6 +100,10 @@ class YoutubeFragment : MediaFragment() {
         youTubePlayerView.release()
     }
 
+    fun repeat() {
+        load(url)
+    }
+
     fun load(url: String?) {
         val videoId = url?.extractVideoIdFromUrl()
         if (videoId?.isNotEmpty() == true) {

@@ -3,7 +3,6 @@ package com.goodjia.multimedia.fragment.component
 import android.os.Bundle
 import android.view.View
 import com.goodjia.multimedia.Task
-import kotlin.random.Random
 
 abstract class PlayTimeMediaFragment : MediaFragment() {
     private val completionRunnable: Runnable = Runnable {
