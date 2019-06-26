@@ -94,10 +94,19 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     override fun onCompletion(action: Int, message: String?) {
         Log.d(TAG, "onCompletion: action $action, $message")
-        if (mediaIndex == tasks!!.size) {
+
+        val size = tasks?.size
+        if (mediaIndex == size) {
             playerListener?.onLoopCompletion()
         }
-        startTask()
+        if (size == 1) {
+            when (mediaFragment) {
+                is VideoFragment -> (mediaFragment as VideoFragment).play()
+                is YoutubeFragment -> (mediaFragment as YoutubeFragment).repeat()
+            }
+        } else {
+            startTask()
+        }
     }
 
     override fun onError(action: Int, message: String?) {
