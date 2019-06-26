@@ -43,43 +43,20 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
         Task(
             Task.ACTION_CUSTOM, playtime = 3,
-//            Error custom class sample
+            //            Error custom class sample
             className = MenuFragment::class.java.name,
-            bundle = CustomTaskFragment.bundle("Custom 1")
+            bundle = CustomTaskFragment.bundle("Custom Error")
         ),
         Task(
             Task.ACTION_IMAGE,
             "https://media.wired.com/photos/598e35994ab8482c0d6946e0/master/w_1164,c_limit/phonepicutres-TA.jpg",
             playtime = 3
         ),
-        Task(
-            Task.ACTION_CUSTOM,
-            playtime = 10,
-            className = CustomTaskFragment::class.java.name,
-            bundle = CustomTaskFragment.bundle("Custom 2")
-        ),
-        Task(
-            Task.ACTION_VIDEO,
-            "http://cowork.coretronic.com/virtualshelf/r/admin/v1/videofiles/1/20181108/1541648105968ZSL6BFM.mp4"
-        ),
-        Task(Task.ACTION_YOUTUBE, "https://www.youtube.com/watch?v=kQ0WqJmqkLA"),
-        Task(
-            Task.ACTION_VIDEO,
-            "http://cowork.coretronic.com/virtualshelf/r/admin/v1/videofiles/1/20181108/1541648064414Z0JKTAN.mp4"
-        ),
-        Task(Task.ACTION_VIDEO, "http://techslides.com/demos/sample-videos/small.mp4"),
         Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
         Task(
             Task.ACTION_YOUTUBE,
-            "https://www.youtube.com/watch?v=7gXB9VdYG7c"
-        ),
-        Task(Task.ACTION_IMAGE, "https://amazingpict.com/wp-content/uploads/2015/04/lake-view-sunset.jpg"),
-        Task(
-            Task.ACTION_IMAGE,
-            "https://www.telegraph.co.uk/content/dam/Travel/2017/April/view-snowdon.jpg?imwidth=1400"
-        ),
-        Task(Task.ACTION_YOUTUBE, "https://www.youtube.com/watch?v=1igDc5jK6iY"),
-        Task(Task.ACTION_IMAGE, "http://kb4images.com/images/picture/37509081-picture.jpg")
+            "https://www.youtube.com/watch?v=ewQqcYbu3CM"
+        )
     )
 
     private val progressBarDialog: MProgressBarDialog by lazy {
@@ -112,7 +89,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
                         val volume = Random().nextInt(100)
                         Log.d(TAG, "onPrepared $volume")
-                        playerFragment.setVolume(volume)
+//                        playerFragment.setVolume(volume)
                     }
 
                     override fun onChange(position: Int, task: Task) {
@@ -187,6 +164,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setProgress() {
+        if (downloadTaskSet.size == 0) return
         val finished = totalSource - downloadTaskSet.size
         progressBarDialog.showProgress(progress, getString(R.string.message_download, finished, totalSource))
     }
