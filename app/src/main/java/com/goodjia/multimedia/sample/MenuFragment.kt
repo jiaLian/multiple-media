@@ -40,22 +40,21 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             className = CustomTaskFragment::class.java.name,
             bundle = CustomTaskFragment.bundle("Custom 1")
         ),
-
-        Task(
-            Task.ACTION_CUSTOM, playtime = 3,
-            //            Error custom class sample
-            className = MenuFragment::class.java.name,
-            bundle = CustomTaskFragment.bundle("Custom Error")
-        ),
         Task(
             Task.ACTION_IMAGE,
-            "https://media.wired.com/photos/598e35994ab8482c0d6946e0/master/w_1164,c_limit/phonepicutres-TA.jpg",
+            "https://images.freeimages.com/images/large-previews/adf/sun-burst-1478549.jpg",
             playtime = 3
         ),
         Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
         Task(
             Task.ACTION_YOUTUBE,
             "https://www.youtube.com/watch?v=ewQqcYbu3CM"
+        ),
+        Task(
+            Task.ACTION_CUSTOM, playtime = 3,
+            //            Error custom class sample
+            className = MenuFragment::class.java.name,
+            bundle = CustomTaskFragment.bundle("Custom Error")
         )
     )
 

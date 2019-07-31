@@ -5,6 +5,10 @@
 The library can play photo, video, youtube and custom fragment.
 It is fragment player.
 
+## Demo
+
+<img src="/demo/autoplay.gif" width="280px"/>       <img src="/demo/list.gif" width="280px"/>
+
 # How to Use
 
 **1. app/build.gradle**
