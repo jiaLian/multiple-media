@@ -7,9 +7,7 @@ It is fragment player.
 
 ## Demo
 
-<img src="/demo/menu.png" width="280px"/> <img src="/demo/playlist.png" width="280px"/>
-
-<img src="/demo/autoplay.gif" width="280px"/> <img src="/demo/list.gif" width="280px"/>
+<img src="/demo/autoplay.gif" width="280px"/>       <img src="/demo/list.gif" width="280px"/>
 
 # How to Use
 
