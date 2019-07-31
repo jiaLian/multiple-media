@@ -9,7 +9,7 @@ It is fragment player.
 
 <img src="/demo/menu.png" width="280px"/> <img src="/demo/playlist.png" width="280px"/>
 
-<video width="320" controls> <source src="/demo/autoplay.mp4" type="video/mp4"></video> <video width="320" controls> <source src="/demo/list.mp4" type="video/mp4"></video>
+<img src="/demo/autoplay.gif" width="280px"/> <img src="/demo/list.gif" width="280px"/>
 
 # How to Use
 
