@@ -13,7 +13,7 @@ It is fragment player.
 
 **1. app/build.gradle**
 ````gradle
-implementation 'com.goodjia:multimedia:'0.1.0'
+implementation 'com.goodjia:multimedia:'0.1.3'
 ````
 
 **2. Task, create task list**
