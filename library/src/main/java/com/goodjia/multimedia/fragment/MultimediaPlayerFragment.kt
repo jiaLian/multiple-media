@@ -72,9 +72,9 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         return inflater.inflate(R.layout.fragment_multimedia_player, container, false)
     }
 
-    override fun onResume() {
-        super.onResume()
-        startTask()
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mediaFragment ?: startTask()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -84,7 +84,16 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         } else {
             mediaFragment?.start()
         }
-        Log.d(TAG, "onHiddenChanged $hidden")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pause()
     }
 
     override fun onDestroyView() {

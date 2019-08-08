@@ -31,17 +31,17 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            uri = arguments!!.getParcelable(MediaFragment.KEY_URI)
+            uri = arguments!!.getParcelable(KEY_URI)
             layoutContent = arguments!!.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
         } else {
-            uri = savedInstanceState.getParcelable(MediaFragment.KEY_URI)
+            uri = savedInstanceState.getParcelable(KEY_URI)
             layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(MediaFragment.KEY_URI, uri)
+        outState.putParcelable(KEY_URI, uri)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,8 +58,8 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
         videoView.setOnErrorListener(this)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         play()
     }
 
