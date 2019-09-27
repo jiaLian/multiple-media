@@ -10,12 +10,11 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.widget.Toast
 import com.goodjia.multimedia.Task
+import com.goodjia.multimedia.TransitionAnimation
 import com.goodjia.multimedia.fragment.BaseFragment
 import com.goodjia.multimedia.fragment.MultimediaPlayerFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
 import com.goodjia.multimedia.fragment.component.YoutubeFragment
-import com.labo.kaji.fragmentanimations.CubeAnimation
-import com.labo.kaji.fragmentanimations.MoveAnimation
 import com.liulishuo.filedownloader.BaseDownloadTask
 import com.liulishuo.filedownloader.FileDownloadLargeFileListener
 import com.liulishuo.filedownloader.FileDownloadQueueSet
@@ -32,6 +31,34 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         val TAG = MenuFragment::class.java.simpleName!!
         fun newInstance() = MenuFragment()
         const val DURATION: Long = 500
+        val ANIMATIONS = listOf(
+            TransitionAnimation(
+                TransitionAnimation.AnimationType.CUBE.name,
+                TransitionAnimation.Direction.DOWN.name,
+                500
+            ),
+            TransitionAnimation(
+                TransitionAnimation.AnimationType.MOVE.name,
+                TransitionAnimation.Direction.UP.name,
+                800
+            ),
+            TransitionAnimation(
+                TransitionAnimation.AnimationType.FLIP.name,
+                TransitionAnimation.Direction.LEFT.name,
+                300
+            ),
+            TransitionAnimation(
+                TransitionAnimation.AnimationType.SIDES.name,
+                TransitionAnimation.Direction.RIGHT.name,
+                1200
+            ),
+            TransitionAnimation(
+                TransitionAnimation.AnimationType.PUSHPULL.name,
+                TransitionAnimation.Direction.RIGHT.name,
+                600
+            ),
+            TransitionAnimation(TransitionAnimation.AnimationType.NONE.name)
+        )
     }
 
     private val tasks = arrayListOf(
@@ -73,32 +100,48 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                 multimediaPlayerFragment =
                     MultimediaPlayerFragment.newInstance(tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/)
 
-                multimediaPlayerFragment?.animationCallback = object : MediaFragment.AnimationCallback {
-                    override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-                        return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
-                        else MoveAnimation.create(MoveAnimation.RIGHT, enter, DURATION).fading(1.0f, 0.3f)
-                    }
-                }
+                multimediaPlayerFragment?.animationCallback =
+                    object : MediaFragment.AnimationCallback {
+                        override fun animation(
+                            transit: Int,
+                            enter: Boolean,
+                            nextAnim: Int
+                        ): Animation? {
+//                        return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
+//                        else MoveAnimation.create(MoveAnimation.RIGHT, enter, DURATION).fading(1.0f, 0.3f)
 
-                multimediaPlayerFragment?.playerListener = object : MultimediaPlayerFragment.PlayerListener {
-                    override fun onLoopCompletion() {
-                        Log.d(TAG, "onLoopCompletion")
+                            //use transaction animation object
+                            return ANIMATIONS[kotlin.random.Random.nextInt(ANIMATIONS.size)].apply {
+                                Log.d(TAG, "animation $this")
+                            }.getAnimation(enter)
+                        }
                     }
 
-                    override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
-                        val volume = Random().nextInt(100)
-                        Log.d(TAG, "onPrepared $volume")
+                multimediaPlayerFragment?.playerListener =
+                    object : MultimediaPlayerFragment.PlayerListener {
+                        override fun onLoopCompletion() {
+                            Log.d(TAG, "onLoopCompletion")
+                        }
+
+                        override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
+                            val volume = Random().nextInt(100)
+                            Log.d(TAG, "onPrepared $volume")
 //                        playerFragment.setVolume(volume)
-                    }
+                        }
 
-                    override fun onChange(position: Int, task: Task) {
-                        Log.d(TAG, "onChange $position, task $task")
-                    }
+                        override fun onChange(position: Int, task: Task) {
+                            Log.d(TAG, "onChange $position, task $task")
+                        }
 
-                    override fun onError(position: Int, task: Task?, action: Int, message: String?) {
-                        Log.d(TAG, "onError $position, task $task, error $message")
+                        override fun onError(
+                            position: Int,
+                            task: Task?,
+                            action: Int,
+                            message: String?
+                        ) {
+                            Log.d(TAG, "onError $position, task $task, error $message")
+                        }
                     }
-                }
                 start(multimediaPlayerFragment)
             }
             R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://www.youtube.com/watch?v=IduYAx4ptNU"))
@@ -112,7 +155,11 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         canDownloadWithPermissionCheck()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_menu, container, false)
     }
 
@@ -134,8 +181,9 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         for (i in 0 until size) {
             task = tasks[i]
             if (task.action == Task.ACTION_VIDEO) {
-                task.filePath = Environment.getExternalStorageDirectory().absolutePath + File.separatorChar +
-                        activity!!.packageName + File.separatorChar + i
+                task.filePath =
+                    Environment.getExternalStorageDirectory().absolutePath + File.separatorChar +
+                            activity!!.packageName + File.separatorChar + i
                 downloadTaskSet.add(task)
             }
         }
@@ -165,7 +213,10 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
     private fun setProgress() {
         if (downloadTaskSet.size == 0) return
         val finished = totalSource - downloadTaskSet.size
-        progressBarDialog.showProgress(progress, getString(R.string.message_download, finished, totalSource))
+        progressBarDialog.showProgress(
+            progress,
+            getString(R.string.message_download, finished, totalSource)
+        )
     }
 
     private val fileListener = object : FileDownloadLargeFileListener() {
@@ -204,30 +255,46 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    @NeedsPermission(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
     fun canDownload() {
         Log.d(TAG, "canDownload: ")
         download()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         onRequestPermissionsResult(requestCode, grantResults)
     }
 
-    @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    @OnShowRationale(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
     fun onShowRationale(request: PermissionRequest) {
         request.proceed()
         Log.d(TAG, "onShowRationale: ")
     }
 
-    @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    @OnPermissionDenied(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
     fun onPermissionDenied() {
         Toast.makeText(activity, "請先開啟讀寫權限", Toast.LENGTH_SHORT).show()
         Log.d(TAG, "onPermissionDenied: ")
     }
 
-    @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    @OnNeverAskAgain(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
     fun onNeverAskAgain() {
         Toast.makeText(activity, "請先開啟讀寫權限", Toast.LENGTH_SHORT).show()
         Log.d(TAG, "onNeverAskAgain: ")
