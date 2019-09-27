@@ -17,7 +17,8 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4.toast
 import kotlin.random.Random
 
-class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener, MultimediaPlayerFragment.PlayerListener {
+class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener,
+    MultimediaPlayerFragment.PlayerListener {
     companion object {
         val TAG = PlayerListFragment::class.java.simpleName!!
         const val KEY_TASKS = "tasks"
@@ -44,7 +45,11 @@ class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener, Mult
         outState.putParcelableArrayList(KEY_TASKS, tasks)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_player_list, container, false)
     }
 
@@ -53,12 +58,17 @@ class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener, Mult
         multimediaPlayerFragment = MultimediaPlayerFragment.newInstance(tasks?.toList())
         multimediaPlayerFragment?.animationCallback = object : MediaFragment.AnimationCallback {
             override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-                return CubeAnimation.create(CubeAnimation.RIGHT, enter, 300).fading(0.3f, 1.0f)
+                return CubeAnimation.create(
+                    CubeAnimation.RIGHT,
+                    enter,
+                    300
+                ).fading(0.3f, 1.0f)
             }
         }
         multimediaPlayerFragment?.playerListener = this
         loadRootFragment(R.id.playerListContainer, multimediaPlayerFragment)
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = TaskAdapter(tasks, this)
         btnCustom.onClick {
             val random = Random.Default

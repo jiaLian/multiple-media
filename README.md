@@ -53,8 +53,44 @@ val multimediaPlayerFragment =
                 //animationCallback: switch page animation
                 multimediaPlayerFragment?.animationCallback = object : MediaFragment.AnimationCallback {
                     override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-                        return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
-                        else MoveAnimation.create(MoveAnimation.RIGHT, enter, DURATION).fading(1.0f, 0.3f)
+//                        return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
+//                        else MoveAnimation.create(MoveAnimation.RIGHT, enter, DURATION).fading(1.0f, 0.3f)
+
+                            //use transaction animation object 
+                            val ANIMATIONS = listOf(
+                                       TransitionAnimation(
+                                           TransitionAnimation.AnimationType.CUBE.name,
+                                           TransitionAnimation.Direction.DOWN.name,
+                                           500
+                                       ),
+                                       TransitionAnimation(
+                                           TransitionAnimation.AnimationType.MOVE.name,
+                                           TransitionAnimation.Direction.UP.name,
+                                           800
+                                       ),
+                                       TransitionAnimation(
+                                           TransitionAnimation.AnimationType.FLIP.name,
+                                           TransitionAnimation.Direction.LEFT.name,
+                                           300
+                                       ),
+                                       TransitionAnimation(
+                                           TransitionAnimation.AnimationType.SIDES.name,
+                                           TransitionAnimation.Direction.RIGHT.name,
+                                           1200
+                                       ),
+                                       TransitionAnimation(
+                                           TransitionAnimation.AnimationType.PUSHPULL.name,
+                                           TransitionAnimation.Direction.RIGHT.name,
+                                           600
+                                       ),
+                                       TransitionAnimation(TransitionAnimation.AnimationType.NONE.name)
+                                   )                           
+                           
+                            return ANIMATIONS[kotlin.random.Random.nextInt(ANIMATIONS.size)].getAnimation(
+                                enter
+                            ).apply {
+                                Log.d(PlayerListFragment.TAG, "animation $this")
+                            }
                     }
                 }
                 // Player listener
