@@ -13,7 +13,9 @@ It is fragment player.
 
 **1. app/build.gradle**
 ````gradle
-implementation 'com.goodjia:multimedia:'0.1.3'
+implementation 'com.goodjia:multimedia:'0.1.4'      //this is use of android.support
+or
+implementation 'com.goodjia:multimedia:'1.1.4'      //this is use of androidx
 ````
 
 **2. Task, create task list**

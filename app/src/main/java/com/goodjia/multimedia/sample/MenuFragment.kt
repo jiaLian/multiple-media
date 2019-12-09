@@ -53,7 +53,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                 1200
             ),
             TransitionAnimation(
-                TransitionAnimation.AnimationType.PUSHPULL.name,
+                TransitionAnimation.AnimationType.PUSH_PULL.name,
                 TransitionAnimation.Direction.RIGHT.name,
                 600
             ),
