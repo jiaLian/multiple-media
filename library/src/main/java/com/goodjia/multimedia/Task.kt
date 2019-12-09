@@ -3,8 +3,8 @@ package com.goodjia.multimedia
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.annotation.IntDef
-import android.support.annotation.IntRange
+import androidx.annotation.IntDef
+import androidx.annotation.IntRange
 import kotlinx.android.parcel.Parcelize
 import java.io.File
 import java.io.Serializable

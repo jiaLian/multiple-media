@@ -1,7 +1,7 @@
 package com.goodjia.multimedia.sample
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -68,7 +68,11 @@ class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener,
         multimediaPlayerFragment?.playerListener = this
         loadRootFragment(R.id.playerListContainer, multimediaPlayerFragment)
         recyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
         recyclerView.adapter = TaskAdapter(tasks, this)
         btnCustom.onClick {
             val random = Random.Default

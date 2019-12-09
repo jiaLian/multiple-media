@@ -16,7 +16,8 @@ import com.goodjia.multimedia.fragment.component.YoutubeFragment
 import java.util.*
 
 
-open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback, MediaFragment.AnimationCallback,
+open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback,
+    MediaFragment.AnimationCallback,
     MediaController {
 
     companion object {
@@ -55,11 +56,17 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
-            layoutContent = arguments!!.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            layoutContent = arguments!!.getInt(
+                VideoFragment.KEY_LAYOUT_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
             layoutContent =
-                savedInstanceState.getInt(VideoFragment.KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                savedInstanceState.getInt(
+                    VideoFragment.KEY_LAYOUT_CONTENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
         }
     }
 
@@ -68,7 +75,11 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         outState.putParcelableArrayList(KEY_TASKS, tasks)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_multimedia_player, container, false)
     }
 
@@ -183,13 +194,17 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
         try {
             when (action) {
-                Task.ACTION_VIDEO -> mediaFragment = VideoFragment.newInstance(playTask.getFileUri(), layoutContent)
+                Task.ACTION_VIDEO -> mediaFragment =
+                    VideoFragment.newInstance(playTask.getFileUri(), layoutContent)
 
-                Task.ACTION_IMAGE -> mediaFragment = ImageFragment.newInstance(playTask.getFileUri(), playTask.playtime)
+                Task.ACTION_IMAGE -> mediaFragment =
+                    ImageFragment.newInstance(playTask.getFileUri(), playTask.playtime)
 
-                Task.ACTION_YOUTUBE -> mediaFragment = YoutubeFragment.newInstance(playTask.url, false)
+                Task.ACTION_YOUTUBE -> mediaFragment =
+                    YoutubeFragment.newInstance(playTask.url, false)
 
                 Task.ACTION_CUSTOM -> {
+                    playTask.className ?: return
                     val clz = Class.forName(playTask.className)
                     val bundle = playTask.bundle ?: Bundle()
                     bundle.putInt(MediaFragment.KEY_PLAY_TIME, playTask.playtime)
@@ -198,7 +213,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 }
             }
             if (mediaFragment != null) {
-                childFragmentManager.beginTransaction().replace(R.id.media_container, mediaFragment!!).commit()
+                childFragmentManager.beginTransaction()
+                    .replace(R.id.media_container, mediaFragment!!).commit()
                 playerListener?.onChange(if (task == null) mediaIndex else -1, playTask)
                 task ?: mediaIndex++
             } else {

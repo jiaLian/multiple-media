@@ -1,7 +1,7 @@
 package com.goodjia.multimedia
 
 import android.net.Uri
-import android.support.annotation.IntRange
+import androidx.annotation.IntRange
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.common.ResizeOptions
