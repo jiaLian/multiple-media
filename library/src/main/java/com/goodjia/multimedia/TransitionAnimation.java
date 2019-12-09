@@ -64,14 +64,15 @@ public class TransitionAnimation {
                 return CubeAnimation.create(direction, enter, duration);
             case FLIP:
                 return FlipAnimation.create(direction, enter, duration);
-            case PUSHPULL:
+            case PUSH_PULL:
                 return PushPullAnimation.create(direction, enter, duration);
             case SIDES:
                 return SidesAnimation.create(direction, enter, duration);
             case NONE:
+            default:
                 return null;
+
         }
-        return null;
     }
 
     @Override
@@ -88,7 +89,7 @@ public class TransitionAnimation {
         MOVE,
         CUBE,
         FLIP,
-        PUSHPULL,
+        PUSH_PULL,
         SIDES
     }
 
