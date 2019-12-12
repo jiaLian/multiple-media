@@ -191,8 +191,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         customTask = task
         val playTask = task ?: tasks!![mediaIndex]
         @Task.Companion.Action val action = playTask.action
-
         try {
+            val oldMediaFragment = mediaFragment
             when (action) {
                 Task.ACTION_VIDEO -> mediaFragment =
                     VideoFragment.newInstance(playTask.getFileUri(), layoutContent)
@@ -213,6 +213,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 }
             }
             if (mediaFragment != null) {
+                oldMediaFragment?.pause()
                 childFragmentManager.beginTransaction()
                     .replace(R.id.media_container, mediaFragment!!).commit()
                 playerListener?.onChange(if (task == null) mediaIndex else -1, playTask)
@@ -221,9 +222,6 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 task ?: mediaIndex++
                 onError(action, "Media Fragment is null $playTask")
             }
-        } catch (e: IllegalStateException) {
-            e.printStackTrace()
-            task ?: mediaIndex++
         } catch (e: Exception) {
             e.printStackTrace()
             task ?: mediaIndex++
