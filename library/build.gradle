@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 def verCode = 15
-def verName = "0.1.5"
+def verName = "0.1.4.1"
 
 androidExtensions {
     experimental = true
