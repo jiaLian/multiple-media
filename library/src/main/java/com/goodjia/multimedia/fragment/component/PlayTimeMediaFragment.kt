@@ -5,7 +5,7 @@ import android.view.View
 import com.goodjia.multimedia.Task
 
 abstract class PlayTimeMediaFragment : MediaFragment() {
-    private val completionRunnable: Runnable = Runnable {
+    private val completionRunnable = Runnable {
         mediaCallback?.onCompletion(
             if (javaClass.simpleName == ImageFragment.javaClass.simpleName) Task.ACTION_IMAGE else Task.ACTION_CUSTOM,
             javaClass.simpleName
