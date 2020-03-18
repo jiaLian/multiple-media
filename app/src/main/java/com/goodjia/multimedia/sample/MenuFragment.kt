@@ -75,7 +75,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
         Task(
             Task.ACTION_YOUTUBE,
-            "https://www.youtube.com/watch?v=ewQqcYbu3CM"
+            "https://youtu.be/nSbCMxSaBaw"
         ),
         Task(
             Task.ACTION_CUSTOM, playtime = 3,
