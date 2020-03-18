@@ -6,6 +6,7 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.common.ResizeOptions
 import com.facebook.imagepipeline.request.ImageRequestBuilder
+import java.net.URLConnection
 import java.util.regex.Pattern
 
 interface MediaController {
@@ -42,7 +43,12 @@ private fun SimpleDraweeView.setController(uri: Uri?) {
 
 fun String.extractVideoIdFromUrl(): String {
     val VIDEO_ID_REGEX =
-        arrayOf("\\?vi?=([^&]*)", "watch\\?.*v=([^&]*)", "(?:embed|vi?)/([^/?]*)", "^([A-Za-z0-9\\-]*)")
+        arrayOf(
+            "\\?vi?=([^&]*)",
+            "watch\\?.*v=([^&]*)",
+            "(?:embed|vi?)/([^/?]*)",
+            "^([A-Za-z0-9\\-]*)"
+        )
     val youTubeLinkWithoutProtocolAndDomain = youTubeLinkWithoutProtocolAndDomain(this)
     for (regex in VIDEO_ID_REGEX) {
         val compiledPattern = Pattern.compile(regex)
@@ -61,5 +67,14 @@ fun youTubeLinkWithoutProtocolAndDomain(url: String): String {
     return if (matcher.find()) {
         url.replace(matcher.group(), "")
     } else url
+}
 
+fun isImageFile(path: String?): Boolean {
+    val mimeType = URLConnection.guessContentTypeFromName(path)
+    return mimeType?.startsWith("image") ?: false
+}
+
+fun isVideoFile(path: String?): Boolean {
+    val mimeType = URLConnection.guessContentTypeFromName(path)
+    return mimeType?.startsWith("video") ?: false
 }

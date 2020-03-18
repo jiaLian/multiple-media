@@ -144,7 +144,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     }
                 start(multimediaPlayerFragment)
             }
-            R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://www.youtube.com/watch?v=IduYAx4ptNU"))
+            R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://youtu.be/nSbCMxSaBaw"))
             R.id.btnPlayerList -> start(PlayerListFragment.newInstance(tasks))
         }
     }

@@ -129,6 +129,13 @@ multimediaPlayerFragment?.play(otherTask)
 ````kotlin
 multimediaPlayerFragment?.play(position)
 ````
+**6. Check can support image/video local file with file name**
+````kotlin
+//return true is video format with file name (can support mp4)
+isVideoFile(filename)
+//return true is image format with file name (can support jpg and png)
+isImageFile(filename)
+````
 
 **.. Start Youtube Fragment**
 ````kotlin
