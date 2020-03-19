@@ -71,10 +71,12 @@ fun youTubeLinkWithoutProtocolAndDomain(url: String): String {
 
 fun isImageFile(path: String?): Boolean {
     val mimeType = URLConnection.guessContentTypeFromName(path)
-    return mimeType?.startsWith("image") ?: false
+    return path?.substringAfterLast("/")
+        ?.startsWith(".") != true && mimeType?.startsWith("image") ?: false
 }
 
 fun isVideoFile(path: String?): Boolean {
     val mimeType = URLConnection.guessContentTypeFromName(path)
-    return mimeType?.startsWith("video") ?: false
+    return path?.substringAfterLast("/")
+        ?.startsWith(".") != true && mimeType?.startsWith("video") ?: false
 }
