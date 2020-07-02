@@ -11,14 +11,24 @@ It is fragment player.
 
 # How to Use
 
-**1. app/build.gradle**
+**1 . root/build.gradle**
 ````gradle
-implementation 'com.goodjia:multimedia:'0.1.4'      //this is use of android.support
-or
-implementation 'com.goodjia:multimedia:'1.1.4'      //this is use of androidx
+allprojects {
+    repositories {
+        ...
+        maven { url "https://dl.bintray.com/jialian/goodJia" }
+    }
+}
 ````
 
-**2. Task, create task list**
+**2. app/build.gradle**
+````gradle
+implementation 'com.goodjia:multimedia:'0.1.4.1'      //this is use of android.support
+or
+implementation 'com.goodjia:multimedia:'{_latestVersion}'      //this is use of androidx
+````
+
+**3. Task, create task list**
 ````kotlin
 tasks = arrayListOf(
         Task(
@@ -44,7 +54,7 @@ tasks = arrayListOf(
         Task(Task.ACTION_YOUTUBE, "https://youtu.be/nSbCMxSaBaw")
         )
 ````
-**3. Start MultimediaPlayerFragment**
+**4. Start MultimediaPlayerFragment**
 ````kotlin
 //Video source size: Wrap content (origin center) 
 /*val multimediaPlayerFragment = 
@@ -118,18 +128,18 @@ val multimediaPlayerFragment =
                 start(multimediaPlayerFragment)
 ````
 
-**4. Change Play other task**
+**5. Change Play other task**
 ````kotlin
 val otherTask=Task()
 ...
 multimediaPlayerFragment?.play(otherTask)
 ````
 
-**5. Change play the position of task list**
+**6. Change play the position of task list**
 ````kotlin
 multimediaPlayerFragment?.play(position)
 ````
-**6. Check can support image/video local file with file name**
+**7. Check can support image/video local file with file name**
 ````kotlin
 //return true is video format with file name (can support mp4)
 isVideoFile(filename)
