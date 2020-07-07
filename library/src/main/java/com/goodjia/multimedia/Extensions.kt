@@ -1,13 +1,17 @@
 package com.goodjia.multimedia
 
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.IntRange
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.drawee.controller.BaseControllerListener
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.common.ResizeOptions
+import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import java.net.URLConnection
 import java.util.regex.Pattern
+import kotlin.math.log
 
 interface MediaController {
     fun setVolume(@IntRange(from = 0, to = 100) volumePercent: Int)
@@ -32,11 +36,20 @@ private fun SimpleDraweeView.setController(uri: Uri?) {
         val request = ImageRequestBuilder.newBuilderWithSource(uri)
             .setResizeOptions(ResizeOptions(width, height))
             .build()
-
         val controller = Fresco.newDraweeControllerBuilder()
+            .setControllerListener(object : BaseControllerListener<ImageInfo>() {
+                override fun onFailure(id: String?, throwable: Throwable?) {
+                    val retry = getTag(R.id.retry) as Boolean?
+                    if (retry != true) {
+                        setTag(R.id.retry, true)
+                        setImageURI(uri, null)
+                    }
+                }
+            })
             .setOldController(controller)
             .setImageRequest(request)
             .build()
+
         setController(controller)
     }
 }

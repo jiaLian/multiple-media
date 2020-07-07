@@ -69,6 +69,11 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         ),
         Task(
             Task.ACTION_IMAGE,
+            "http://cowork.coretronic.com/virtualshelf/r/admin/v1/blob/virtualshelf/org-1/image/20200707/1594085333703ZAMI.JPG",
+            playtime = 3
+        ),
+        Task(
+            Task.ACTION_IMAGE,
             "https://images.freeimages.com/images/large-previews/adf/sun-burst-1478549.jpg",
             playtime = 3
         ),
