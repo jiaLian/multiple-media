@@ -127,19 +127,67 @@ val multimediaPlayerFragment =
                 }
                 start(multimediaPlayerFragment)
 ````
+**5. Show MultimediaPlayerPresentation (Secondary Screen)**
+````kotlin
+context?.displayManager?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+            ?.get(0)?.let {
+                multimediaPlayerPresentation = MultimediaPlayerPresentation.newInstance(
+                    context!!,
+                    it, presentationTasks
+                )
+            }
 
-**5. Change Play other task**
+        multimediaPlayerPresentation?.animationCallback =
+            object : MediaFragment.AnimationCallback {
+                override fun animation(
+                    transit: Int,
+                    enter: Boolean,
+                    nextAnim: Int
+                ): Animation? {
+                    return ANIMATIONS[Random.nextInt(ANIMATIONS.size)].apply {
+                        Log.d(TAG, "presentation animation $this")
+                    }.getAnimation(enter)
+                }
+            }
+
+        multimediaPlayerPresentation?.playerListener =
+            object : MultimediaPlayerFragment.PlayerListener {
+                override fun onLoopCompletion() {
+                    Log.d(TAG, "presentation onLoopCompletion")
+                }
+
+                override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
+                    playerFragment.setVolume(0)
+                }
+
+                override fun onChange(position: Int, task: Task) {
+                    Log.d(TAG, "presentation onChange $position, task $task")
+                }
+
+                override fun onError(
+                    position: Int,
+                    task: Task?,
+                    action: Int,
+                    message: String?
+                ) {
+                    Log.d(TAG, "presentation onError $position, task $task, error $message")
+                }
+            }
+        multimediaPlayerPresentation?.show(fragmentManager!!, "secondary")
+````
+
+**6. Change Play other task**
 ````kotlin
 val otherTask=Task()
 ...
 multimediaPlayerFragment?.play(otherTask)
 ````
 
-**6. Change play the position of task list**
+**7. Change play the position of task list**
 ````kotlin
 multimediaPlayerFragment?.play(position)
 ````
-**7. Check can support image/video local file with file name**
+**8. Check can support image/video local file with file name**
 ````kotlin
 //return true is video format with file name (can support mp4)
 isVideoFile(filename)

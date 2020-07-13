@@ -1,6 +1,7 @@
 package com.goodjia.multimedia.sample
 
 import android.Manifest
+import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -15,15 +16,19 @@ import com.goodjia.multimedia.fragment.BaseFragment
 import com.goodjia.multimedia.fragment.MultimediaPlayerFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
 import com.goodjia.multimedia.fragment.component.YoutubeFragment
+import com.goodjia.multimedia.presentation.MultimediaPlayerPresentation
 import com.liulishuo.filedownloader.BaseDownloadTask
 import com.liulishuo.filedownloader.FileDownloadLargeFileListener
 import com.liulishuo.filedownloader.FileDownloadQueueSet
 import com.liulishuo.filedownloader.FileDownloader
 import com.maning.mndialoglibrary.MProgressBarDialog
 import kotlinx.android.synthetic.main.fragment_menu.*
+import org.jetbrains.anko.displayManager
 import permissions.dispatcher.*
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.random.Random
 
 @RuntimePermissions
 class MenuFragment : BaseFragment(), View.OnClickListener {
@@ -80,7 +85,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
         Task(
             Task.ACTION_YOUTUBE,
-            "https://youtu.be/nSbCMxSaBaw"
+            "https://youtu.be/033JQZV8cJU"
         ),
         Task(
             Task.ACTION_CUSTOM, playtime = 3,
@@ -88,6 +93,19 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             className = MenuFragment::class.java.name,
             bundle = CustomTaskFragment.bundle("Custom Error")
         )
+    )
+    private val presentationTasks = arrayListOf(
+        Task(
+            Task.ACTION_IMAGE,
+            "https://www.sripanwa.com/wp-content/uploads/view-2/7-View-Gallery-Sri-Panwa-Luxury-Hotel-Phuket-Resort-3000x1688.jpg",
+            playtime = 5
+        ),
+        Task(
+            Task.ACTION_CUSTOM, playtime = 10,
+            className = CustomTaskFragment::class.java.name,
+            bundle = CustomTaskFragment.bundle("Presentation")
+        ),
+        Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
     )
 
     private val progressBarDialog: MProgressBarDialog by lazy {
@@ -99,64 +117,119 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
     private var totalSource: Int = 0
     private var progress: Int = 0
     private var multimediaPlayerFragment: MultimediaPlayerFragment? = null
+    private var multimediaPlayerPresentation: MultimediaPlayerPresentation? = null
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnMultimediaPlayer -> {
-                multimediaPlayerFragment =
-                    MultimediaPlayerFragment.newInstance(tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/)
-
-                multimediaPlayerFragment?.animationCallback =
-                    object : MediaFragment.AnimationCallback {
-                        override fun animation(
-                            transit: Int,
-                            enter: Boolean,
-                            nextAnim: Int
-                        ): Animation? {
-//                        return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
-//                        else MoveAnimation.create(MoveAnimation.RIGHT, enter, DURATION).fading(1.0f, 0.3f)
-
-                            //use transaction animation object
-                            return ANIMATIONS[kotlin.random.Random.nextInt(ANIMATIONS.size)].apply {
-                                Log.d(TAG, "animation $this")
-                            }.getAnimation(enter)
-                        }
-                    }
-
-                multimediaPlayerFragment?.playerListener =
-                    object : MultimediaPlayerFragment.PlayerListener {
-                        override fun onLoopCompletion() {
-                            Log.d(TAG, "onLoopCompletion")
-                        }
-
-                        override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
-                            val volume = Random().nextInt(100)
-                            Log.d(TAG, "onPrepared $volume")
-//                        playerFragment.setVolume(volume)
-                        }
-
-                        override fun onChange(position: Int, task: Task) {
-                            Log.d(TAG, "onChange $position, task $task")
-                        }
-
-                        override fun onError(
-                            position: Int,
-                            task: Task?,
-                            action: Int,
-                            message: String?
-                        ) {
-                            Log.d(TAG, "onError $position, task $task, error $message")
-                        }
-                    }
-                start(multimediaPlayerFragment)
+                openPlayerFragment()
+                showPresentation()
             }
             R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://youtu.be/nSbCMxSaBaw"))
             R.id.btnPlayerList -> start(PlayerListFragment.newInstance(tasks))
         }
     }
 
+    private fun openPlayerFragment() {
+        multimediaPlayerFragment =
+            MultimediaPlayerFragment.newInstance(tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/)
+
+        multimediaPlayerFragment?.animationCallback =
+            object : MediaFragment.AnimationCallback {
+                override fun animation(
+                    transit: Int,
+                    enter: Boolean,
+                    nextAnim: Int
+                ): Animation? {
+                    //                        return if (enter) CubeAnimation.create(CubeAnimation.RIGHT, enter, DURATION).fading(0.3f, 1.0f)
+                    //                        else MoveAnimation.create(MoveAnimation.RIGHT, enter, DURATION).fading(1.0f, 0.3f)
+
+                    //use transaction animation object
+                    return ANIMATIONS[Random.nextInt(ANIMATIONS.size)].apply {
+                        Log.d(TAG, "animation $this")
+                    }.getAnimation(enter)
+                }
+            }
+
+        multimediaPlayerFragment?.playerListener =
+            object : MultimediaPlayerFragment.PlayerListener {
+                override fun onLoopCompletion() {
+                    Log.d(TAG, "onLoopCompletion")
+                }
+
+                override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
+                    //                            val volume = Random().nextInt(100)
+                    //                            Log.d(TAG, "onPrepared $volume")
+                    //                        playerFragment.setVolume(volume)
+                }
+
+                override fun onChange(position: Int, task: Task) {
+                    Log.d(TAG, "onChange $position, task $task")
+                }
+
+                override fun onError(
+                    position: Int,
+                    task: Task?,
+                    action: Int,
+                    message: String?
+                ) {
+                    Log.d(TAG, "onError $position, task $task, error $message")
+                }
+            }
+        start(multimediaPlayerFragment)
+    }
+
+    private fun showPresentation() {
+        context?.displayManager?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+            ?.get(0)?.let {
+                multimediaPlayerPresentation = MultimediaPlayerPresentation.newInstance(
+                    context!!,
+                    it, presentationTasks
+                )
+            }
+
+        multimediaPlayerPresentation?.animationCallback =
+            object : MediaFragment.AnimationCallback {
+                override fun animation(
+                    transit: Int,
+                    enter: Boolean,
+                    nextAnim: Int
+                ): Animation? {
+                    return ANIMATIONS[Random.nextInt(ANIMATIONS.size)].apply {
+                        Log.d(TAG, "presentation animation $this")
+                    }.getAnimation(enter)
+                }
+            }
+
+        multimediaPlayerPresentation?.playerListener =
+            object : MultimediaPlayerFragment.PlayerListener {
+                override fun onLoopCompletion() {
+                    Log.d(TAG, "presentation onLoopCompletion")
+                }
+
+                override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
+                    playerFragment.setVolume(0)
+                }
+
+                override fun onChange(position: Int, task: Task) {
+                    Log.d(TAG, "presentation onChange $position, task $task")
+                }
+
+                override fun onError(
+                    position: Int,
+                    task: Task?,
+                    action: Int,
+                    message: String?
+                ) {
+                    Log.d(TAG, "presentation onError $position, task $task, error $message")
+                }
+            }
+        multimediaPlayerPresentation?.show(fragmentManager!!, "secondary")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initTasks()
+        initTasks(tasks, presentationTasks)
         canDownloadWithPermissionCheck()
     }
 
@@ -180,16 +253,18 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         FileDownloader.getImpl().pause(fileListener)
     }
 
-    private fun initTasks() {
-        var task: Task
-        val size = tasks.size
-        for (i in 0 until size) {
-            task = tasks[i]
-            if (task.action == Task.ACTION_VIDEO) {
-                task.filePath =
-                    Environment.getExternalStorageDirectory().absolutePath + File.separatorChar +
-                            activity!!.packageName + File.separatorChar + i
-                downloadTaskSet.add(task)
+    private fun initTasks(vararg taskList: ArrayList<Task>) {
+        taskList.forEachIndexed { index, arrayList ->
+            var task: Task
+            val size = arrayList.size
+            for (i in 0 until size) {
+                task = arrayList[i]
+                if (task.action == Task.ACTION_VIDEO) {
+                    task.filePath =
+                        Environment.getExternalStorageDirectory().absolutePath + File.separatorChar +
+                                activity!!.packageName + File.separatorChar + index + i
+                    downloadTaskSet.add(task)
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.fragment.component.ImageFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
 import com.goodjia.multimedia.fragment.component.VideoFragment
+import com.goodjia.multimedia.fragment.component.VideoFragment.Companion.KEY_LAYOUT_CONTENT
 import com.goodjia.multimedia.fragment.component.YoutubeFragment
 import java.util.*
 
@@ -30,15 +31,13 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         fun newInstance(
             tasks: List<Task>?,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
-        ): MultimediaPlayerFragment {
+        ) = MultimediaPlayerFragment().apply {
             val args = Bundle()
             if (tasks != null) {
                 args.putParcelableArrayList(KEY_TASKS, ArrayList(tasks))
             }
-            args.putInt(VideoFragment.KEY_LAYOUT_CONTENT, layoutContent)
-            val fragment = MultimediaPlayerFragment()
-            fragment.arguments = args
-            return fragment
+            args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
+            arguments = args
         }
     }
 
@@ -57,14 +56,14 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         if (savedInstanceState == null) {
             tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
             layoutContent = arguments!!.getInt(
-                VideoFragment.KEY_LAYOUT_CONTENT,
+                KEY_LAYOUT_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
             layoutContent =
                 savedInstanceState.getInt(
-                    VideoFragment.KEY_LAYOUT_CONTENT,
+                    KEY_LAYOUT_CONTENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
         }
@@ -73,6 +72,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelableArrayList(KEY_TASKS, tasks)
+        outState.putInt(KEY_LAYOUT_CONTENT,layoutContent)
     }
 
     override fun onCreateView(

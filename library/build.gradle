@@ -3,8 +3,8 @@ apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-def verCode = 20
-def verName = "1.1.8"
+def verCode = 21
+def verName = "1.2.0"
 
 androidExtensions {
     experimental = true
@@ -50,6 +50,7 @@ dependencies {
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:8.0.1'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     api 'com.labo.kaji:fragmentanimations:0.1.1'
+    api 'com.commonsware.cwac:presentation.x:0.6.1'
 }
 
 publish {
