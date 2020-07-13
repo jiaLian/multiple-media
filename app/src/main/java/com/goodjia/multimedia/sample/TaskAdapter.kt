@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import com.goodjia.multimedia.Task
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_task.*
-import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class TaskAdapter(val tasks: List<Task>?, val onItemClickListener: OnItemClickListener? = null) :
     RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
@@ -29,7 +28,7 @@ class TaskAdapter(val tasks: List<Task>?, val onItemClickListener: OnItemClickLi
         LayoutContainer {
         fun setContent(position: Int, task: Task?) {
             tv.text = "$position"
-            tv.onClick {
+            tv.setOnClickListener {
                 onItemClickListener?.onClicked(position, task)
             }
         }

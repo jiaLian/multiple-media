@@ -13,7 +13,6 @@ import com.goodjia.multimedia.fragment.MultimediaPlayerFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
 import com.labo.kaji.fragmentanimations.CubeAnimation
 import kotlinx.android.synthetic.main.fragment_player_list.*
-import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4.toast
 import kotlin.random.Random
 
@@ -74,7 +73,7 @@ class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener,
                 false
             )
         recyclerView.adapter = TaskAdapter(tasks, this)
-        btnCustom.onClick {
+        btnCustom.setOnClickListener {
             val random = Random.Default
             multimediaPlayerFragment?.play(tasks?.get(random.nextInt(tasks?.size ?: 0)))
         }
