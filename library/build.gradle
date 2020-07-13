@@ -47,7 +47,7 @@ dependencies {
     implementation 'com.sprylab.android.texturevideoview:texturevideoview:1.2.1'
     api 'com.facebook.fresco:fresco:2.2.0'
     api 'me.yokeyword:fragmentationx:1.0.2'
-    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:8.0.1'
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     api 'com.labo.kaji:fragmentanimations:0.1.1'
     api 'com.commonsware.cwac:presentation.x:0.6.1'

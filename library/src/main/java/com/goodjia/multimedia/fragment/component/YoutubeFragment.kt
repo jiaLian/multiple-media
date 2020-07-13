@@ -1,18 +1,20 @@
 package com.goodjia.multimedia.fragment.component
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.extractVideoIdFromUrl
-import com.pierfrancescosoffritti.androidyoutubeplayer.player.PlayerConstants
-import com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.player.YouTubePlayerView
-import com.pierfrancescosoffritti.androidyoutubeplayer.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 class YoutubeFragment : MediaFragment() {
     companion object {
+        val TAG = YoutubeFragment::class.java.simpleName
         const val KEY_UI = "showUI"
 
         @JvmStatic
@@ -31,24 +33,28 @@ class YoutubeFragment : MediaFragment() {
 
     private var showUI: Boolean = false
 
-    private val youTubePlayerView: YouTubePlayerView  by lazy {
-        YouTubePlayerView(context)
+    private val youTubePlayerView: YouTubePlayerView by lazy {
+        YouTubePlayerView(context!!).apply {
+            enableAutomaticInitialization = false
+        }
     }
     private var youTubePlayer: YouTubePlayer? = null
 
     private val youTubePlayerListener = object : AbstractYouTubePlayerListener() {
-        override fun onReady() {
+        override fun onReady(youTubePlayer: YouTubePlayer) {
+            this@YoutubeFragment.youTubePlayer = youTubePlayer
             load(url)
             mediaCallback?.onPrepared()
         }
 
-        override fun onError(error: PlayerConstants.PlayerError) {
-            super.onError(error)
+        override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
             mediaCallback?.onError(Task.ACTION_YOUTUBE, url)
         }
 
-        override fun onStateChange(state: PlayerConstants.PlayerState) {
-            super.onStateChange(state)
+        override fun onStateChange(
+            youTubePlayer: YouTubePlayer,
+            state: PlayerConstants.PlayerState
+        ) {
             if (PlayerConstants.PlayerState.ENDED == state) {
                 mediaCallback?.onCompletion(Task.ACTION_YOUTUBE, url)
             }
@@ -71,9 +77,13 @@ class YoutubeFragment : MediaFragment() {
         outState.putString(MediaFragment.KEY_URI, url)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         lifecycle.addObserver(youTubePlayerView)
-        youTubePlayerView.playerUIController.showUI(showUI)
+        youTubePlayerView.getPlayerUiController().showUi(showUI)
         return youTubePlayerView
     }
 
@@ -86,10 +96,7 @@ class YoutubeFragment : MediaFragment() {
 
     override fun onStart() {
         super.onStart()
-        youTubePlayer?.play() ?: youTubePlayerView.initialize({ initializedYouTubePlayer ->
-            youTubePlayer = initializedYouTubePlayer
-            initializedYouTubePlayer.addListener(youTubePlayerListener)
-        }, true)
+        youTubePlayer?.play() ?: youTubePlayerView.initialize(youTubePlayerListener, true)
     }
 
     override fun setVolume(volumePercent: Int) {
