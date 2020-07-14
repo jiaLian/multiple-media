@@ -1,6 +1,7 @@
 package com.goodjia.multimedia.presentation
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Display
 import android.view.LayoutInflater
@@ -73,7 +74,9 @@ class MultimediaPlayerPresentation : PresentationFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_multimedia_player, container, false)
+        val view = inflater.inflate(R.layout.fragment_multimedia_player, container, false)
+        view.setBackgroundColor(Color.BLACK)
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

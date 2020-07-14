@@ -101,6 +101,11 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             playtime = 5
         ),
         Task(
+            Task.ACTION_IMAGE,
+            "http://cowork.coretronic.com/virtualshelf/r/admin/v1/blob/virtualshelf/org-1/image/20200707/1594085333703ZAMI.JPG",
+            playtime = 3
+        ),
+        Task(
             Task.ACTION_CUSTOM, playtime = 10,
             className = CustomTaskFragment::class.java.name,
             bundle = CustomTaskFragment.bundle("Presentation")
@@ -125,7 +130,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                 openPlayerFragment()
                 showPresentation()
             }
-            R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://youtu.be/nSbCMxSaBaw"))
+            R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://youtu.be/033JQZV8cJU"))
             R.id.btnPlayerList -> start(PlayerListFragment.newInstance(tasks))
         }
     }
@@ -180,13 +185,17 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun showPresentation() {
-        context?.displayManager?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
-            ?.get(0)?.let {
-                multimediaPlayerPresentation = MultimediaPlayerPresentation.newInstance(
-                    context!!,
-                    it, presentationTasks
-                )
-            }
+        try {
+            context?.displayManager?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+                ?.get(0)?.let {
+                    multimediaPlayerPresentation = MultimediaPlayerPresentation.newInstance(
+                        context!!,
+                        it, presentationTasks
+                    )
+                }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         multimediaPlayerPresentation?.animationCallback =
             object : MediaFragment.AnimationCallback {
