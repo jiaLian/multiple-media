@@ -17,6 +17,9 @@ allprojects {
     repositories {
         ...
         maven { url "https://dl.bintray.com/jialian/goodJia" }
+        
+        // Used to MultimediaPlayerPresentation class (optional)
+        maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
     }
 }
 ````
