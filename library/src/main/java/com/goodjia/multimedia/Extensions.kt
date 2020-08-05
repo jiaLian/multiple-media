@@ -1,7 +1,6 @@
 package com.goodjia.multimedia
 
 import android.net.Uri
-import android.util.Log
 import androidx.annotation.IntRange
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.BaseControllerListener
@@ -11,7 +10,6 @@ import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import java.net.URLConnection
 import java.util.regex.Pattern
-import kotlin.math.log
 
 interface MediaController {
     fun setVolume(@IntRange(from = 0, to = 100) volumePercent: Int)
@@ -82,14 +80,22 @@ fun youTubeLinkWithoutProtocolAndDomain(url: String): String {
     } else url
 }
 
+fun isImageMimeType(mimeType: String?): Boolean {
+    return mimeType?.startsWith("image") ?: false
+}
+
+fun isVideoMimeType(mimeType: String?): Boolean {
+    return mimeType?.startsWith("video") ?: false
+}
+
 fun isImageFile(path: String?): Boolean {
     val mimeType = URLConnection.guessContentTypeFromName(path)
     return path?.substringAfterLast("/")
-        ?.startsWith(".") != true && mimeType?.startsWith("image") ?: false
+        ?.startsWith(".") != true && isImageMimeType(mimeType)
 }
 
 fun isVideoFile(path: String?): Boolean {
     val mimeType = URLConnection.guessContentTypeFromName(path)
     return path?.substringAfterLast("/")
-        ?.startsWith(".") != true && mimeType?.startsWith("video") ?: false
+        ?.startsWith(".") != true && isVideoMimeType(mimeType)
 }
