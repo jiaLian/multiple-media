@@ -3,8 +3,8 @@ apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-def verCode = 22
-def verName = "1.2.1"
+def verCode = 23
+def verName = "1.2.2"
 
 androidExtensions {
     experimental = true

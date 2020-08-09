@@ -1,7 +1,6 @@
 package com.goodjia.multimedia.fragment.component
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,7 +33,7 @@ class YoutubeFragment : MediaFragment() {
     private var showUI: Boolean = false
 
     private val youTubePlayerView: YouTubePlayerView by lazy {
-        YouTubePlayerView(context!!).apply {
+        YouTubePlayerView(_mActivity).apply {
             enableAutomaticInitialization = false
         }
     }
@@ -64,8 +63,8 @@ class YoutubeFragment : MediaFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            url = arguments!!.getString(MediaFragment.KEY_URI)
-            showUI = arguments!!.getBoolean(KEY_UI)
+            url = arguments?.getString(MediaFragment.KEY_URI)
+            showUI = arguments?.getBoolean(KEY_UI) ?: false
         } else {
             url = savedInstanceState.getString(MediaFragment.KEY_URI)
             showUI = savedInstanceState.getBoolean(KEY_UI)

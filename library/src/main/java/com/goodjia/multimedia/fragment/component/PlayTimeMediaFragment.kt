@@ -1,6 +1,7 @@
 package com.goodjia.multimedia.fragment.component
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.goodjia.multimedia.Task
 
@@ -15,9 +16,9 @@ abstract class PlayTimeMediaFragment : MediaFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            playtime = arguments!!.getInt(KEY_PLAY_TIME)
+            playtime = arguments?.getInt(KEY_PLAY_TIME) ?: Task.DEFAULT_PLAYTIME
         } else {
-            playtime = savedInstanceState.getInt(KEY_PLAY_TIME)
+            playtime = savedInstanceState.getInt(KEY_PLAY_TIME, Task.DEFAULT_PLAYTIME)
         }
     }
 

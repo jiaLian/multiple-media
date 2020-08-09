@@ -31,8 +31,8 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            uri = arguments!!.getParcelable(KEY_URI)
-            layoutContent = arguments!!.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            uri = arguments?.getParcelable(KEY_URI)
+            layoutContent = arguments?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)?:ViewGroup.LayoutParams.MATCH_PARENT
         } else {
             uri = savedInstanceState.getParcelable(KEY_URI)
             layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)

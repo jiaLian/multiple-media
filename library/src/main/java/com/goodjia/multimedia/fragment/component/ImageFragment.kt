@@ -43,10 +43,10 @@ class ImageFragment : PlayTimeMediaFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!Fresco.hasBeenInitialized()) {
-            Fresco.initialize(context!!)
+            Fresco.initialize(context)
         }
         if (savedInstanceState == null) {
-            uri = arguments!!.getParcelable(KEY_URI)
+            uri = arguments?.getParcelable(KEY_URI)
         } else {
             uri = savedInstanceState.getParcelable(KEY_URI)
         }
@@ -57,7 +57,11 @@ class ImageFragment : PlayTimeMediaFragment() {
         outState.putParcelable(KEY_URI, uri)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         draweeView.setBackgroundColor(Color.TRANSPARENT)
         return draweeView
     }

@@ -30,7 +30,7 @@ class CustomTaskFragment : PlayTimeMediaFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            id = arguments!!.getString(KEY_ID)
+            id = arguments?.getString(KEY_ID)
         } else {
             id = savedInstanceState.getString(KEY_ID)
         }

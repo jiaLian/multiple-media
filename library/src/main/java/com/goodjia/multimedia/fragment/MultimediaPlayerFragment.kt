@@ -43,7 +43,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
 
-    var tasks: ArrayList<Task>? = null
+    lateinit var tasks: ArrayList<Task>
     private var customTask: Task? = null
     protected var mediaIndex = 0
     private var mediaFragment: MediaFragment? = null
@@ -54,13 +54,13 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
-            layoutContent = arguments!!.getInt(
+            tasks = arguments?.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
+            layoutContent = arguments?.getInt(
                 KEY_LAYOUT_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
-            )
+            ) ?: ViewGroup.LayoutParams.MATCH_PARENT
         } else {
-            tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
+            tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
             layoutContent =
                 savedInstanceState.getInt(
                     KEY_LAYOUT_CONTENT,
@@ -72,7 +72,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelableArrayList(KEY_TASKS, tasks)
-        outState.putInt(KEY_LAYOUT_CONTENT,layoutContent)
+        outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
     }
 
     override fun onCreateView(
@@ -131,10 +131,10 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     override fun onError(action: Int, message: String?) {
         Log.d(TAG, "onError: action $action, $message")
-        val position = if (mediaIndex == 0) tasks!!.size - 1 else mediaIndex - 1
+        val position = if (mediaIndex == 0) tasks.lastIndex else mediaIndex - 1
         playerListener?.onError(
             if (customTask == null) position else -1,
-            if (customTask == null) tasks!![position] else customTask,
+            if (customTask == null) tasks[position] else customTask,
             action,
             message
         )
@@ -166,10 +166,10 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     protected fun startTask() {
-        if (isHidden || tasks == null || tasks!!.size == 0) return
+        if (isHidden || tasks.isNullOrEmpty()) return
 
 
-        if (mediaIndex > tasks!!.size - 1) {
+        if (mediaIndex > tasks.lastIndex) {
             mediaIndex = 0
         }
         openMediaFragment()
@@ -189,7 +189,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     private fun openMediaFragment(task: Task? = null) {
         customTask = task
-        val playTask = task ?: tasks!![mediaIndex]
+        val playTask = task ?: tasks[mediaIndex]
         @Task.Companion.Action val action = playTask.action
         try {
             val oldMediaFragment = mediaFragment

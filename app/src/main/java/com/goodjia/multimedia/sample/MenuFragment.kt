@@ -33,7 +33,7 @@ import kotlin.random.Random
 @RuntimePermissions
 class MenuFragment : BaseFragment(), View.OnClickListener {
     companion object {
-        val TAG = MenuFragment::class.java.simpleName!!
+        val TAG = MenuFragment::class.java.simpleName
         fun newInstance() = MenuFragment()
         const val DURATION: Long = 500
         val ANIMATIONS = listOf(
@@ -233,7 +233,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     Log.d(TAG, "presentation onError $position, task $task, error $message")
                 }
             }
-        multimediaPlayerPresentation?.show(fragmentManager!!, "secondary")
+        fragmentManager?.let { multimediaPlayerPresentation?.show(it, "secondary") }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -271,7 +271,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                 if (task.action == Task.ACTION_VIDEO) {
                     task.filePath =
                         Environment.getExternalStorageDirectory().absolutePath + File.separatorChar +
-                                activity!!.packageName + File.separatorChar + index + i
+                                activity?.packageName + File.separatorChar + index + i
                     downloadTaskSet.add(task)
                 }
             }

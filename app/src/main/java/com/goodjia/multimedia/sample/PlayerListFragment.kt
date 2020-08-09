@@ -19,7 +19,7 @@ import kotlin.random.Random
 class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener,
     MultimediaPlayerFragment.PlayerListener {
     companion object {
-        val TAG = PlayerListFragment::class.java.simpleName!!
+        val TAG = PlayerListFragment::class.java.simpleName
         const val KEY_TASKS = "tasks"
         fun newInstance(tasks: ArrayList<Task>): PlayerListFragment {
             val args = Bundle()
@@ -35,7 +35,7 @@ class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tasks = if (savedInstanceState == null) arguments!!.getParcelableArrayList(KEY_TASKS)
+        tasks = if (savedInstanceState == null) arguments?.getParcelableArrayList(KEY_TASKS)
         else savedInstanceState.getParcelableArrayList(KEY_TASKS)
     }
 

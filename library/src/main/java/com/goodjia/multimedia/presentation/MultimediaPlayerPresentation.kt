@@ -42,19 +42,19 @@ class MultimediaPlayerPresentation : PresentationFragment() {
     var playerListener: MultimediaPlayerFragment.PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
 
-    private var tasks: ArrayList<Task>? = null
+    private lateinit var tasks: ArrayList<Task>
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            tasks = arguments!!.getParcelableArrayList(KEY_TASKS)
-            layoutContent = arguments!!.getInt(
+            tasks = arguments?.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
+            layoutContent = arguments?.getInt(
                 KEY_LAYOUT_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
-            )
+            )?:ViewGroup.LayoutParams.MATCH_PARENT
         } else {
-            tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)
+            tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS)?: arrayListOf()
             layoutContent =
                 savedInstanceState.getInt(
                     KEY_LAYOUT_CONTENT,
