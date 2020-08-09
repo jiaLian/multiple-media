@@ -38,7 +38,8 @@ abstract class PlayTimeMediaFragment : MediaFragment() {
     }
 
     override fun start() {
-        this.view?.postDelayed(completionRunnable, playtime * 1000L)
+        view?.removeCallbacks(completionRunnable)
+        view?.postDelayed(completionRunnable, playtime * 1000L)
     }
 
     override fun stop() {
