@@ -17,7 +17,8 @@ data class Task @JvmOverloads constructor(
     var description: String? = null,
     @IntRange(from = 0) var playtime: Int = DEFAULT_PLAYTIME,
     val className: String? = null,
-    val bundle: Bundle? = null
+    val bundle: Bundle? = null,
+    val errorSet: LinkedHashSet<Long> = linkedSetOf()
 ) : Parcelable, Serializable {
 
     companion object {

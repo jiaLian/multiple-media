@@ -132,12 +132,9 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     override fun onError(action: Int, message: String?) {
         Log.d(TAG, "onError: action $action, $message")
         val position = if (mediaIndex == 0) tasks.lastIndex else mediaIndex - 1
-        playerListener?.onError(
-            if (customTask == null) position else -1,
-            if (customTask == null) tasks[position] else customTask,
-            action,
-            message
-        )
+        val task = if (customTask == null) tasks[position] else customTask
+        task?.errorSet?.add(System.currentTimeMillis())
+        playerListener?.onError(if (customTask == null) position else -1, task, action, message)
         startTask()
     }
 
