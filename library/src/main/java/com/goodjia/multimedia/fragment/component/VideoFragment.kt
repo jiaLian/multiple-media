@@ -2,6 +2,7 @@ package com.goodjia.multimedia.fragment.component
 
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +12,16 @@ import com.goodjia.multimedia.Task
 import kotlinx.android.synthetic.main.fragment_video.*
 
 
-open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
+open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
+    MediaPlayer.OnErrorListener,
     MediaPlayer.OnPreparedListener {
     companion object {
+        val TAG = VideoFragment::class.simpleName
         const val KEY_LAYOUT_CONTENT = "layout_content"
-        fun newInstance(uri: Uri, layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT): VideoFragment {
+        fun newInstance(
+            uri: Uri,
+            layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
+        ): VideoFragment {
             val args = Bundle()
             args.putParcelable(MediaFragment.KEY_URI, uri)
             args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
@@ -27,15 +33,22 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
 
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
     private var mediaPlayer: MediaPlayer? = null
+    private var videoPosition: Int? = null
+        set(value) {
+            field = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) null else value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             uri = arguments?.getParcelable(KEY_URI)
-            layoutContent = arguments?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)?:ViewGroup.LayoutParams.MATCH_PARENT
+            layoutContent =
+                arguments?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                    ?: ViewGroup.LayoutParams.MATCH_PARENT
         } else {
             uri = savedInstanceState.getParcelable(KEY_URI)
-            layoutContent = savedInstanceState.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            layoutContent =
+                savedInstanceState.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
     }
 
@@ -44,7 +57,11 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
         outState.putParcelable(KEY_URI, uri)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_video, container, false)
     }
 
@@ -63,12 +80,20 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
         play()
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (videoView?.isPlaying == true) {
+            videoPosition = mediaPlayer?.currentPosition
+        }
+    }
+
     override fun onDestroyView() {
         videoView?.stopPlayback()
         super.onDestroyView()
     }
 
     override fun onCompletion(mp: MediaPlayer) {
+        videoPosition = null
         mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
     }
 
@@ -78,6 +103,7 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
+        videoPosition?.let { mp?.seekTo(it) }
         mediaPlayer = mp
         mediaCallback?.onPrepared()
     }
@@ -89,6 +115,7 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener, Me
 
     fun play() {
         uri.apply {
+            videoPosition = null
             videoView?.setVideoURI(this)
             videoView?.start()
         }
