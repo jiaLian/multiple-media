@@ -75,12 +75,12 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         Task(
             Task.ACTION_IMAGE,
             "http://cowork.coretronic.com/virtualshelf/r/admin/v1/blob/virtualshelf/org-1/image/20200707/1594085333703ZAMI.JPG",
-            playtime = 3
+            playtime = 10
         ),
         Task(
             Task.ACTION_IMAGE,
             "https://images.freeimages.com/images/large-previews/adf/sun-burst-1478549.jpg",
-            playtime = 3
+            playtime = 20
         ),
         Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
         Task(
@@ -88,7 +88,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             "https://youtu.be/033JQZV8cJU"
         ),
         Task(
-            Task.ACTION_CUSTOM, playtime = 3,
+            Task.ACTION_CUSTOM, playtime = 15,
             //            Error custom class sample
             className = MenuFragment::class.java.name,
             bundle = CustomTaskFragment.bundle("Custom Error")

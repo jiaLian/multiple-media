@@ -28,14 +28,15 @@ abstract class MediaFragment : BaseFragment(), MediaController {
     }
     protected var uri: Uri? = null
 
-    protected  var playtime: Int=Task.DEFAULT_PLAYTIME
+    protected var playtime: Int = Task.DEFAULT_PLAYTIME
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
-        return animationCallback?.animation(transit, enter, nextAnim) ?: super.onCreateAnimation(
-            transit,
-            enter,
-            nextAnim
-        )
+        return if (!isDetached) animationCallback?.animation(transit, enter, nextAnim)
+            ?: super.onCreateAnimation(
+                transit,
+                enter,
+                nextAnim
+            ) else null
     }
 
     override fun setVolume(volumePercent: Int) {
