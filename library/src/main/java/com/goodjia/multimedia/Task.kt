@@ -16,6 +16,7 @@ data class Task @JvmOverloads constructor(
     var filePath: String? = null,
     var description: String? = null,
     @IntRange(from = 0) var playtime: Int = DEFAULT_PLAYTIME,
+    @IntRange(from = 1) var repeatTimes: Int = 1,
     val className: String? = null,
     val bundle: Bundle? = null,
     val errorSet: LinkedHashSet<Long> = linkedSetOf()

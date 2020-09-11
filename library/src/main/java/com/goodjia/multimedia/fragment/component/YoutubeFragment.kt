@@ -1,6 +1,7 @@
 package com.goodjia.multimedia.fragment.component
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,10 +19,14 @@ class YoutubeFragment : MediaFragment() {
 
         @JvmStatic
         @JvmOverloads
-        fun newInstance(url: String?, showUI: Boolean = true): YoutubeFragment {
+        fun newInstance(
+            url: String?, showUI: Boolean = true,
+            repeatTimes: Int = 1
+        ): YoutubeFragment {
             val args = Bundle()
-            args.putString(MediaFragment.KEY_URI, url)
+            args.putString(KEY_URI, url)
             args.putBoolean(KEY_UI, showUI)
+            args.putInt(KEY_REPEAT_TIMES, repeatTimes)
             val fragment = YoutubeFragment()
             fragment.arguments = args
             return fragment
@@ -55,7 +60,13 @@ class YoutubeFragment : MediaFragment() {
             state: PlayerConstants.PlayerState
         ) {
             if (PlayerConstants.PlayerState.ENDED == state) {
-                mediaCallback?.onCompletion(Task.ACTION_YOUTUBE, url)
+                repeatCount++
+                if (repeatCount < repeatTimes) {
+                    repeat()
+                    Log.d(TAG, "repeat $repeatCount")
+                } else {
+                    mediaCallback?.onCompletion(Task.ACTION_YOUTUBE, url)
+                }
             }
         }
     }
@@ -63,17 +74,17 @@ class YoutubeFragment : MediaFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            url = arguments?.getString(MediaFragment.KEY_URI)
+            url = arguments?.getString(KEY_URI)
             showUI = arguments?.getBoolean(KEY_UI) ?: false
         } else {
-            url = savedInstanceState.getString(MediaFragment.KEY_URI)
+            url = savedInstanceState.getString(KEY_URI)
             showUI = savedInstanceState.getBoolean(KEY_UI)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(MediaFragment.KEY_URI, url)
+        outState.putString(KEY_URI, url)
     }
 
     override fun onCreateView(

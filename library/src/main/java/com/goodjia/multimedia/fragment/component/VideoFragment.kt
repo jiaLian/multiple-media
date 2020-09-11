@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,13 +19,18 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
     companion object {
         val TAG = VideoFragment::class.simpleName
         const val KEY_LAYOUT_CONTENT = "layout_content"
+
+        @JvmStatic
+        @JvmOverloads
         fun newInstance(
             uri: Uri,
-            layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
+            layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
+            repeatTimes: Int = 1
         ): VideoFragment {
             val args = Bundle()
-            args.putParcelable(MediaFragment.KEY_URI, uri)
+            args.putParcelable(KEY_URI, uri)
             args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
+            args.putInt(KEY_REPEAT_TIMES, repeatTimes)
             val fragment = VideoFragment()
             fragment.arguments = args
             return fragment
@@ -94,7 +100,13 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
 
     override fun onCompletion(mp: MediaPlayer) {
         videoPosition = null
-        mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
+        repeatCount++
+        if (repeatCount < repeatTimes) {
+            play()
+            Log.d(TAG, "repeat $repeatCount")
+        } else {
+            mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
+        }
     }
 
     override fun onError(mediaPlayer: MediaPlayer, i: Int, i1: Int): Boolean {

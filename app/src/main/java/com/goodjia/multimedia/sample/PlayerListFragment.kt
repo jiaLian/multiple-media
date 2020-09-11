@@ -83,12 +83,16 @@ class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener,
         multimediaPlayerFragment?.play(position)
     }
 
-    override fun onLoopCompletion() {
+    override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
+        Log.d(TAG, "onPrepared")
+    }
+
+    override fun onLoopCompletion(repeatCount: Int) {
         Log.d(TAG, "onLoopCompletion")
     }
 
-    override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
-        Log.d(TAG, "onPrepared")
+    override fun onFinished() {
+        Log.d(TAG, "onFinished")
     }
 
     override fun onChange(position: Int, task: Task) {

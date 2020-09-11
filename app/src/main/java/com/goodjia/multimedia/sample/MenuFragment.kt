@@ -82,14 +82,18 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             "https://images.freeimages.com/images/large-previews/adf/sun-burst-1478549.jpg",
             playtime = 20
         ),
-        Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"),
+        Task(
+            Task.ACTION_VIDEO,
+            "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
+            repeatTimes = 2
+        ),
         Task(
             Task.ACTION_YOUTUBE,
-            "https://youtu.be/033JQZV8cJU"
+            "https://youtu.be/033JQZV8cJU", repeatTimes = 3
         ),
         Task(
             Task.ACTION_CUSTOM, playtime = 15,
-            //            Error custom class sample
+            //        Error custom class sample
             className = MenuFragment::class.java.name,
             bundle = CustomTaskFragment.bundle("Custom Error")
         )
@@ -137,7 +141,10 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
     private fun openPlayerFragment() {
         multimediaPlayerFragment =
-            MultimediaPlayerFragment.newInstance(tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/)
+            MultimediaPlayerFragment.newInstance(
+                tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/,
+                repeatTimes = 3
+            )
 
         multimediaPlayerFragment?.animationCallback =
             object : MediaFragment.AnimationCallback {
@@ -158,18 +165,28 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
         multimediaPlayerFragment?.playerListener =
             object : MultimediaPlayerFragment.PlayerListener {
-                override fun onLoopCompletion() {
-                    Log.d(TAG, "onLoopCompletion")
-                }
-
                 override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
                     //                            val volume = Random().nextInt(100)
                     //                            Log.d(TAG, "onPrepared $volume")
                     //                        playerFragment.setVolume(volume)
                 }
 
+                override fun onLoopCompletion(repeatCount: Int) {
+                    Log.d(
+                        TAG,
+                        "onLoopCompletion $repeatCount, finished ${multimediaPlayerFragment?.isFinished}"
+                    )
+                }
+
+                override fun onFinished() {
+                    Log.d(TAG, "onFinished ${multimediaPlayerFragment?.isFinished}")
+                }
+
                 override fun onChange(position: Int, task: Task) {
-                    Log.d(TAG, "onChange $position, task $task")
+                    Log.d(
+                        TAG,
+                        "onChange $position, task $task, finished ${multimediaPlayerFragment?.isFinished}"
+                    )
                 }
 
                 override fun onError(
@@ -212,12 +229,17 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
         multimediaPlayerPresentation?.playerListener =
             object : MultimediaPlayerFragment.PlayerListener {
-                override fun onLoopCompletion() {
-                    Log.d(TAG, "presentation onLoopCompletion")
-                }
 
                 override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
                     playerFragment.setVolume(0)
+                }
+
+                override fun onLoopCompletion(repeatCount: Int) {
+                    Log.d(TAG, "presentation onLoopCompletion $repeatCount")
+                }
+
+                override fun onFinished() {
+                    Log.d(TAG, "presentation onFinished")
                 }
 
                 override fun onChange(position: Int, task: Task) {

@@ -11,6 +11,8 @@ import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.fragment.component.ImageFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
+import com.goodjia.multimedia.fragment.component.MediaFragment.Companion.KEY_PLAY_TIME
+import com.goodjia.multimedia.fragment.component.MediaFragment.Companion.KEY_REPEAT_TIMES
 import com.goodjia.multimedia.fragment.component.VideoFragment
 import com.goodjia.multimedia.fragment.component.VideoFragment.Companion.KEY_LAYOUT_CONTENT
 import com.goodjia.multimedia.fragment.component.YoutubeFragment
@@ -23,20 +25,21 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     companion object {
         private val TAG = MultimediaPlayerFragment::class.java.simpleName
-
         const val KEY_TASKS = "tasks"
 
         @JvmStatic
         @JvmOverloads
         fun newInstance(
             tasks: List<Task>?,
-            layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
+            layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
+            repeatTimes: Int = Int.MIN_VALUE,
+            playTime: Int = Int.MIN_VALUE
         ) = MultimediaPlayerFragment().apply {
             val args = Bundle()
-            if (tasks != null) {
-                args.putParcelableArrayList(KEY_TASKS, ArrayList(tasks))
-            }
+            tasks?.let { args.putParcelableArrayList(KEY_TASKS, ArrayList(it)) }
             args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
+            args.putInt(KEY_PLAY_TIME, playTime)
+            args.putInt(KEY_REPEAT_TIMES, repeatTimes)
             arguments = args
         }
     }
@@ -47,9 +50,20 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private var customTask: Task? = null
     protected var mediaIndex = 0
     private var mediaFragment: MediaFragment? = null
-
+    private var startTime: Long = 0
+    private var repeatTimes: Int = Int.MIN_VALUE
+    private var repeatCount: Int = 0
+    private var playtime: Int = Int.MIN_VALUE
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
+    val isFinished
+        get() = playtime == 0 || if (repeatTimes > 0) repeatCount >= repeatTimes else repeatCount >= 1
+    private val completionRunnable by lazy {
+        Runnable {
+            playtime = 0
+            playerListener?.onFinished()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +73,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 KEY_LAYOUT_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             ) ?: ViewGroup.LayoutParams.MATCH_PARENT
+            playtime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
+            repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
             layoutContent =
@@ -66,6 +82,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                     KEY_LAYOUT_CONTENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
+            playtime = savedInstanceState.getInt(KEY_PLAY_TIME)
+            repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
         }
     }
 
@@ -73,6 +91,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         super.onSaveInstanceState(outState)
         outState.putParcelableArrayList(KEY_TASKS, tasks)
         outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
+        outState.putInt(KEY_PLAY_TIME, playtime)
+        outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
     }
 
     override fun onCreateView(
@@ -114,12 +134,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     override fun onCompletion(action: Int, message: String?) {
         Log.d(TAG, "onCompletion: action $action, $message")
-
-        val size = tasks?.size
-        if (mediaIndex == size) {
-            playerListener?.onLoopCompletion()
-        }
-        if (size == 1) {
+        checkLoopCompletion()
+        if (tasks.size == 1) {
             when (mediaFragment) {
                 is VideoFragment -> (mediaFragment as VideoFragment).play()
                 is YoutubeFragment -> (mediaFragment as YoutubeFragment).repeat()
@@ -135,6 +151,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         val task = if (customTask == null) tasks[position] else customTask
         task?.errorSet?.add(System.currentTimeMillis())
         playerListener?.onError(if (customTask == null) position else -1, task, action, message)
+        checkLoopCompletion()
         startTask()
     }
 
@@ -152,20 +169,21 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     override fun start() {
         mediaFragment?.start()
+        postPlaytime()
     }
 
     override fun pause() {
         mediaFragment?.pause()
+        removePlaytime()
     }
 
     override fun stop() {
         mediaFragment?.stop()
+        removePlaytime()
     }
 
     protected fun startTask() {
         if (isHidden || tasks.isNullOrEmpty()) return
-
-
         if (mediaIndex > tasks.lastIndex) {
             mediaIndex = 0
         }
@@ -184,6 +202,15 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         openMediaFragment(task)
     }
 
+    private fun checkLoopCompletion() {
+        if (mediaIndex == tasks.size) {
+            playerListener?.onLoopCompletion(++repeatCount)
+            if (repeatTimes > 0 && repeatCount == repeatTimes) {
+                playerListener?.onFinished()
+            }
+        }
+    }
+
     private fun openMediaFragment(task: Task? = null) {
         customTask = task
         val playTask = task ?: tasks[mediaIndex]
@@ -192,13 +219,21 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
             val oldMediaFragment = mediaFragment
             when (action) {
                 Task.ACTION_VIDEO -> mediaFragment =
-                    VideoFragment.newInstance(playTask.getFileUri(), layoutContent)
+                    VideoFragment.newInstance(
+                        playTask.getFileUri(),
+                        layoutContent,
+                        repeatTimes = playTask.repeatTimes
+                    )
 
                 Task.ACTION_IMAGE -> mediaFragment =
                     ImageFragment.newInstance(playTask.getFileUri(), playTask.playtime)
 
                 Task.ACTION_YOUTUBE -> mediaFragment =
-                    YoutubeFragment.newInstance(playTask.url, false)
+                    YoutubeFragment.newInstance(
+                        playTask.url,
+                        false,
+                        repeatTimes = playTask.repeatTimes
+                    )
 
                 Task.ACTION_CUSTOM -> {
                     playTask.className ?: return
@@ -226,6 +261,19 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         }
     }
 
+    private fun postPlaytime() {
+        if (playtime == Int.MIN_VALUE) return
+        startTime = System.currentTimeMillis()
+        view?.removeCallbacks(completionRunnable)
+        view?.postDelayed(completionRunnable, playtime * 1000L)
+    }
+
+    private fun removePlaytime() {
+        if (playtime == Int.MIN_VALUE) return
+        val processTime = (System.currentTimeMillis() - startTime) / 1000
+        playtime = if (processTime < playtime) playtime - processTime.toInt() else 0
+        view?.removeCallbacks(completionRunnable)
+    }
 
     interface PlayerListener {
         fun onChange(position: Int, task: Task)
@@ -234,6 +282,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
         fun onPrepared(playerFragment: MultimediaPlayerFragment)
 
-        fun onLoopCompletion()
+        fun onLoopCompletion(repeatCount: Int)
+
+        fun onFinished()
     }
 }

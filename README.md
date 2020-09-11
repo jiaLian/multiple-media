@@ -52,16 +52,17 @@ tasks = arrayListOf(
         ),
         Task(
             Task.ACTION_VIDEO,
-            "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4"
+            "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4",
+            repeatTimes = 2
         ),
-        Task(Task.ACTION_YOUTUBE, "https://youtu.be/nSbCMxSaBaw")
+        Task(Task.ACTION_YOUTUBE, "https://youtu.be/nSbCMxSaBaw",repeatTimes = 2)
         )
 ````
 **4. Start MultimediaPlayerFragment**
 ````kotlin
-//Video source size: Wrap content (origin center) 
+//Video source size: Wrap content (origin center);Set repeatTimes or playtime
 /*val multimediaPlayerFragment = 
-               MultimediaPlayerFragment.newInstance(tasks, ViewGroup.LayoutParams.WRAP_CONTENT)*/
+               MultimediaPlayerFragment.newInstance(tasks, ViewGroup.LayoutParams.WRAP_CONTENT,repeatTimes = 3,playTime=10)*/
 //Video source size: default fit center
 val multimediaPlayerFragment = 
                MultimediaPlayerFragment.newInstance(tasks)
@@ -94,7 +95,7 @@ val multimediaPlayerFragment =
                                            1200
                                        ),
                                        TransitionAnimation(
-                                           TransitionAnimation.AnimationType.PUSHPULL.name,
+                                           TransitionAnimation.AnimationType.PUSH_PULL.name,
                                            TransitionAnimation.Direction.RIGHT.name,
                                            600
                                        ),
@@ -110,8 +111,15 @@ val multimediaPlayerFragment =
                 }
                 // Player listener
                 multimediaPlayerFragment?.playerListener = object : MultimediaPlayerFragment.PlayerListener {
-                    override fun onLoopCompletion() {
-                        Log.d(TAG, "onLoopCompletion")
+                    override fun onLoopCompletion(repeatCount: Int) {
+                        Log.d(
+                        TAG,
+                        "onLoopCompletion $repeatCount, finished ${multimediaPlayerFragment?.isFinished}"
+                        )
+                    }
+
+                    override fun onFinished() {
+                        Log.d(TAG, "onFinished ${multimediaPlayerFragment?.isFinished}")
                     }
 
                     override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
@@ -155,8 +163,14 @@ context?.displayManager?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATIO
 
         multimediaPlayerPresentation?.playerListener =
             object : MultimediaPlayerFragment.PlayerListener {
-                override fun onLoopCompletion() {
-                    Log.d(TAG, "presentation onLoopCompletion")
+                override fun onLoopCompletion(repeatCount: Int) {
+                    Log.d(TAG,
+                    "presentation onLoopCompletion $repeatCount, finished ${multimediaPlayerFragment?.isFinished}"
+                    )
+                }
+
+                override fun onFinished() {
+                    Log.d(TAG, "presentation onFinished ${multimediaPlayerFragment?.isFinished}")
                 }
 
                 override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
