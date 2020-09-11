@@ -61,7 +61,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
     val isFinished
-        get() = playtime == 0 || if (repeatTimes > 0) repeatCount >= repeatTimes else repeatCount >= 1
+        get() = playtime == 0 || if (repeatTimes > 0) repeatCount >= repeatTimes else repeatCount >= 1 && playtime == Int.MIN_VALUE
     private val completionRunnable by lazy {
         Runnable {
             playtime = 0
