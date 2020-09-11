@@ -26,6 +26,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     companion object {
         private val TAG = MultimediaPlayerFragment::class.java.simpleName
         const val KEY_TASKS = "tasks"
+        const val KEY_VOLUME = "volume"
 
         @JvmStatic
         @JvmOverloads
@@ -33,13 +34,15 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
             tasks: List<Task>?,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
             repeatTimes: Int = Int.MIN_VALUE,
-            playTime: Int = Int.MIN_VALUE
+            playTime: Int = Int.MIN_VALUE,
+            volumePercent: Int = Int.MIN_VALUE
         ) = MultimediaPlayerFragment().apply {
             val args = Bundle()
             tasks?.let { args.putParcelableArrayList(KEY_TASKS, ArrayList(it)) }
             args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
             args.putInt(KEY_PLAY_TIME, playTime)
             args.putInt(KEY_REPEAT_TIMES, repeatTimes)
+            args.putInt(KEY_VOLUME, volumePercent)
             arguments = args
         }
     }
@@ -54,6 +57,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private var repeatTimes: Int = Int.MIN_VALUE
     private var repeatCount: Int = 0
     private var playtime: Int = Int.MIN_VALUE
+    private var volumePercent: Int = Int.MIN_VALUE
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
     val isFinished
@@ -75,6 +79,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
             ) ?: ViewGroup.LayoutParams.MATCH_PARENT
             playtime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
             repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
+            volumePercent = arguments?.getInt(KEY_VOLUME) ?: Int.MIN_VALUE
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
             layoutContent =
@@ -84,6 +89,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 )
             playtime = savedInstanceState.getInt(KEY_PLAY_TIME)
             repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
+            volumePercent = savedInstanceState.getInt(KEY_VOLUME)
         }
     }
 
@@ -93,6 +99,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
         outState.putInt(KEY_PLAY_TIME, playtime)
         outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
+        outState.putInt(KEY_VOLUME, volumePercent)
     }
 
     override fun onCreateView(
@@ -157,6 +164,9 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     override fun onPrepared() {
         playerListener?.onPrepared(this)
+        if (volumePercent >= 0) {
+            setVolume(volumePercent)
+        }
     }
 
     override fun animation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
@@ -205,7 +215,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private fun checkLoopCompletion() {
         if (mediaIndex == tasks.size) {
             playerListener?.onLoopCompletion(++repeatCount)
-            if (repeatTimes > 0 && repeatCount == repeatTimes) {
+            if (isFinished) {
                 playerListener?.onFinished()
             }
         }
