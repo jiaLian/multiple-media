@@ -80,7 +80,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         Task(
             Task.ACTION_IMAGE,
             "https://images.freeimages.com/images/large-previews/adf/sun-burst-1478549.jpg",
-            playtime = 20
+            playtime = 10
         ),
         Task(
             Task.ACTION_VIDEO,
@@ -89,11 +89,11 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         ),
         Task(
             Task.ACTION_YOUTUBE,
-            "https://youtu.be/033JQZV8cJU", repeatTimes = 3
+            "https://youtu.be/033JQZV8cJU", repeatTimes = 1
         ),
         Task(
-            Task.ACTION_CUSTOM, playtime = 15,
-            //        Error custom class sample
+            Task.ACTION_CUSTOM, playtime = 5,
+//                    Error custom class sample
             className = MenuFragment::class.java.name,
             bundle = CustomTaskFragment.bundle("Custom Error")
         )
@@ -143,7 +143,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         multimediaPlayerFragment =
             MultimediaPlayerFragment.newInstance(
                 tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/,
-                repeatTimes = 3
+                repeatTimes = 2
             )
 
         multimediaPlayerFragment?.animationCallback =

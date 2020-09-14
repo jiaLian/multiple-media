@@ -27,6 +27,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         private val TAG = MultimediaPlayerFragment::class.java.simpleName
         const val KEY_TASKS = "tasks"
         const val KEY_VOLUME = "volume"
+        const val FINISHED = -1
 
         @JvmStatic
         @JvmOverloads
@@ -56,15 +57,15 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private var startTime: Long = 0
     private var repeatTimes: Int = Int.MIN_VALUE
     private var repeatCount: Int = 0
-    private var playtime: Int = Int.MIN_VALUE
+    private var playTime: Int = Int.MIN_VALUE
     private var volumePercent: Int = Int.MIN_VALUE
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
     val isFinished
-        get() = playtime == 0 || if (repeatTimes > 0) repeatCount >= repeatTimes else repeatCount >= 1 && playtime == Int.MIN_VALUE
+        get() = playTime == FINISHED || repeatTimes == FINISHED
     private val completionRunnable by lazy {
         Runnable {
-            playtime = 0
+            playTime = FINISHED
             playerListener?.onFinished()
         }
     }
@@ -77,7 +78,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 KEY_LAYOUT_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             ) ?: ViewGroup.LayoutParams.MATCH_PARENT
-            playtime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
+            playTime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
             repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
             volumePercent = arguments?.getInt(KEY_VOLUME) ?: Int.MIN_VALUE
         } else {
@@ -87,7 +88,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                     KEY_LAYOUT_CONTENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-            playtime = savedInstanceState.getInt(KEY_PLAY_TIME)
+            playTime = savedInstanceState.getInt(KEY_PLAY_TIME)
             repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
             volumePercent = savedInstanceState.getInt(KEY_VOLUME)
         }
@@ -97,7 +98,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         super.onSaveInstanceState(outState)
         outState.putParcelableArrayList(KEY_TASKS, tasks)
         outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
-        outState.putInt(KEY_PLAY_TIME, playtime)
+        outState.putInt(KEY_PLAY_TIME, playTime)
         outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
         outState.putInt(KEY_VOLUME, volumePercent)
     }
@@ -215,7 +216,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private fun checkLoopCompletion() {
         if (mediaIndex == tasks.size) {
             playerListener?.onLoopCompletion(++repeatCount)
-            if (isFinished) {
+            if (playTime == Int.MIN_VALUE && repeatTimes != FINISHED && repeatCount == if (repeatTimes > 0) repeatTimes else 1) {
+                repeatTimes = FINISHED
                 playerListener?.onFinished()
             }
         }
@@ -272,16 +274,16 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     private fun postPlaytime() {
-        if (playtime == Int.MIN_VALUE) return
+        if (playTime == Int.MIN_VALUE || playTime == FINISHED) return
         startTime = System.currentTimeMillis()
         view?.removeCallbacks(completionRunnable)
-        view?.postDelayed(completionRunnable, playtime * 1000L)
+        view?.postDelayed(completionRunnable, playTime * 1000L)
     }
 
     private fun removePlaytime() {
-        if (playtime == Int.MIN_VALUE) return
+        if (playTime == Int.MIN_VALUE || playTime == FINISHED) return
         val processTime = (System.currentTimeMillis() - startTime) / 1000
-        playtime = if (processTime < playtime) playtime - processTime.toInt() else 0
+        playTime = if (processTime < playTime) playTime - processTime.toInt() else 0
         view?.removeCallbacks(completionRunnable)
     }
 
