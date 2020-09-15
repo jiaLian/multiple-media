@@ -117,7 +117,12 @@ class YoutubeFragment : MediaFragment() {
         youTubePlayerView.release()
     }
 
-    fun repeat() {
+    override fun repeat() {
+        super.repeat()
+        load(url)
+    }
+
+    fun reload() {
         load(url)
     }
 

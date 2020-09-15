@@ -30,18 +30,27 @@ abstract class MediaFragment : BaseFragment(), MediaController {
     }
     protected var uri: Uri? = null
 
-    protected var playtime: Int = Task.DEFAULT_PLAYTIME
+    protected var playTime: Int = Task.DEFAULT_PLAYTIME
+    protected var resetPlayTime: Int = Task.DEFAULT_PLAYTIME
     protected var repeatTimes: Int = 1
     protected var repeatCount: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        repeatTimes = savedInstanceState?.getInt(KEY_REPEAT_TIMES)
-            ?: (arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE)
+        if (savedInstanceState == null) {
+            playTime = arguments?.getInt(KEY_PLAY_TIME) ?: Task.DEFAULT_PLAYTIME
+            resetPlayTime = arguments?.getInt(KEY_PLAY_TIME) ?: Task.DEFAULT_PLAYTIME
+            repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
+        } else {
+            playTime = savedInstanceState.getInt(KEY_PLAY_TIME, Task.DEFAULT_PLAYTIME)
+            resetPlayTime = savedInstanceState.getInt(KEY_PLAY_TIME, Task.DEFAULT_PLAYTIME)
+            repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
+        outState.putInt(KEY_PLAY_TIME, playTime)
     }
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
@@ -53,6 +62,10 @@ abstract class MediaFragment : BaseFragment(), MediaController {
             ) else null
     }
 
+    override fun repeat() {
+        repeatCount = 0
+        playTime = resetPlayTime
+    }
     override fun setVolume(volumePercent: Int) {
     }
 

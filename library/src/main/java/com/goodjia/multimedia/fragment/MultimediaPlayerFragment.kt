@@ -27,7 +27,6 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         private val TAG = MultimediaPlayerFragment::class.java.simpleName
         const val KEY_TASKS = "tasks"
         const val KEY_VOLUME = "volume"
-        const val FINISHED = -1
 
         @JvmStatic
         @JvmOverloads
@@ -57,16 +56,21 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private var startTime: Long = 0
     private var repeatTimes: Int = Int.MIN_VALUE
     private var repeatCount: Int = 0
+    private var resetPlayTime: Int = Int.MIN_VALUE
     private var playTime: Int = Int.MIN_VALUE
     private var volumePercent: Int = Int.MIN_VALUE
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
-    val isFinished
-        get() = playTime == FINISHED || repeatTimes == FINISHED
+    var isFinished = false
+        private set(value) {
+            field = value
+            if (value) {
+                playerListener?.onFinished()
+            }
+        }
     private val completionRunnable by lazy {
         Runnable {
-            playTime = FINISHED
-            playerListener?.onFinished()
+            isFinished = true
         }
     }
 
@@ -79,6 +83,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 ViewGroup.LayoutParams.MATCH_PARENT
             ) ?: ViewGroup.LayoutParams.MATCH_PARENT
             playTime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
+            resetPlayTime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
             repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
             volumePercent = arguments?.getInt(KEY_VOLUME) ?: Int.MIN_VALUE
         } else {
@@ -89,6 +94,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
             playTime = savedInstanceState.getInt(KEY_PLAY_TIME)
+            resetPlayTime = savedInstanceState.getInt(KEY_PLAY_TIME)
             repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
             volumePercent = savedInstanceState.getInt(KEY_VOLUME)
         }
@@ -146,7 +152,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         if (tasks.size == 1) {
             when (mediaFragment) {
                 is VideoFragment -> (mediaFragment as VideoFragment).play()
-                is YoutubeFragment -> (mediaFragment as YoutubeFragment).repeat()
+                is YoutubeFragment -> (mediaFragment as YoutubeFragment).reload()
             }
         } else {
             startTask()
@@ -193,6 +199,20 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         removePlaytime()
     }
 
+    override fun repeat() {
+        if (tasks.isNotEmpty()) {
+            if (resetPlayTime > 0) {
+                play(0)
+            }
+        } else {
+            mediaFragment?.repeat()
+        }
+        isFinished = false
+        repeatCount = 0
+        playTime = resetPlayTime
+        postPlaytime()
+    }
+
     protected fun startTask() {
         if (isHidden || tasks.isNullOrEmpty()) return
         if (mediaIndex > tasks.lastIndex) {
@@ -216,9 +236,8 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     private fun checkLoopCompletion() {
         if (mediaIndex == tasks.size) {
             playerListener?.onLoopCompletion(++repeatCount)
-            if (playTime == Int.MIN_VALUE && repeatTimes != FINISHED && repeatCount == if (repeatTimes > 0) repeatTimes else 1) {
-                repeatTimes = FINISHED
-                playerListener?.onFinished()
+            if (playTime == Int.MIN_VALUE && !isFinished && repeatCount == if (repeatTimes > 0) repeatTimes else 1) {
+                isFinished = true
             }
         }
     }
@@ -274,14 +293,14 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     private fun postPlaytime() {
-        if (playTime == Int.MIN_VALUE || playTime == FINISHED) return
+        if (playTime == Int.MIN_VALUE || isFinished) return
         startTime = System.currentTimeMillis()
         view?.removeCallbacks(completionRunnable)
         view?.postDelayed(completionRunnable, playTime * 1000L)
     }
 
     private fun removePlaytime() {
-        if (playTime == Int.MIN_VALUE || playTime == FINISHED) return
+        if (playTime == Int.MIN_VALUE || isFinished) return
         val processTime = (System.currentTimeMillis() - startTime) / 1000
         playTime = if (processTime < playTime) playTime - processTime.toInt() else 0
         view?.removeCallbacks(completionRunnable)

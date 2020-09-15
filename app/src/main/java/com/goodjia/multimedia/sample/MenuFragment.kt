@@ -143,8 +143,9 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         multimediaPlayerFragment =
             MultimediaPlayerFragment.newInstance(
                 tasks/*, ViewGroup.LayoutParams.WRAP_CONTENT*/,
-                repeatTimes = 2
-            )
+//            playTime = 15
+               repeatTimes = 2
+                )
 
         multimediaPlayerFragment?.animationCallback =
             object : MediaFragment.AnimationCallback {

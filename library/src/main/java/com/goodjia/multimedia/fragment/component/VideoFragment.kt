@@ -144,4 +144,9 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
     override fun stop() {
         videoView?.stopPlayback()
     }
+
+    override fun repeat() {
+        super.repeat()
+        play()
+    }
 }

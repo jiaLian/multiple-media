@@ -16,6 +16,7 @@ interface MediaController {
     fun start()
     fun pause()
     fun stop()
+    fun repeat()
 }
 
 fun SimpleDraweeView.setResizeImage(uri: Uri?) {
