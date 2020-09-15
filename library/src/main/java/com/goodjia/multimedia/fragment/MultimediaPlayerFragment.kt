@@ -16,7 +16,6 @@ import com.goodjia.multimedia.fragment.component.MediaFragment.Companion.KEY_REP
 import com.goodjia.multimedia.fragment.component.VideoFragment
 import com.goodjia.multimedia.fragment.component.VideoFragment.Companion.KEY_LAYOUT_CONTENT
 import com.goodjia.multimedia.fragment.component.YoutubeFragment
-import java.util.*
 
 
 open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback,
@@ -211,6 +210,17 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         repeatCount = 0
         playTime = resetPlayTime
         postPlaytime()
+    }
+
+    @JvmOverloads
+    fun reset(tasks: List<Task>, repeatTimes: Int = Int.MIN_VALUE, playTime: Int = Int.MIN_VALUE) {
+        this.tasks = ArrayList(tasks)
+        this.repeatTimes = repeatTimes
+        this.resetPlayTime = playTime
+        repeat()
+        if (resetPlayTime == Int.MIN_VALUE && repeatTimes > 0) {
+            play(0)
+        }
     }
 
     protected fun startTask() {
