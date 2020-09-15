@@ -152,6 +152,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
             when (mediaFragment) {
                 is VideoFragment -> (mediaFragment as VideoFragment).play()
                 is YoutubeFragment -> (mediaFragment as YoutubeFragment).reload()
+                else -> mediaFragment?.repeat()
             }
         } else {
             startTask()
