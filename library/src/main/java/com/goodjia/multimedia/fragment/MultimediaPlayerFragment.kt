@@ -219,7 +219,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         this.repeatTimes = repeatTimes
         this.resetPlayTime = playTime
         repeat()
-        if (resetPlayTime == Int.MIN_VALUE && repeatTimes > 0) {
+        if (resetPlayTime == Int.MIN_VALUE && (repeatTimes == Int.MIN_VALUE || repeatTimes > 0)) {
             play(0)
         }
     }
