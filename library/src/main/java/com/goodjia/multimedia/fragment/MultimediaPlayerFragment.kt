@@ -32,16 +32,16 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         fun newInstance(
             tasks: List<Task>?,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
-            repeatTimes: Int = Int.MIN_VALUE,
-            playTime: Int = Int.MIN_VALUE,
-            volumePercent: Int = Int.MIN_VALUE
+            repeatTimes: Int? = null,
+            playTime: Int? = null,
+            volumePercent: Int? = null
         ) = MultimediaPlayerFragment().apply {
             val args = Bundle()
             tasks?.let { args.putParcelableArrayList(KEY_TASKS, ArrayList(it)) }
             args.putInt(KEY_LAYOUT_CONTENT, layoutContent)
-            args.putInt(KEY_PLAY_TIME, playTime)
-            args.putInt(KEY_REPEAT_TIMES, repeatTimes)
-            args.putInt(KEY_VOLUME, volumePercent)
+            args.putInt(KEY_PLAY_TIME, playTime ?: Int.MIN_VALUE)
+            args.putInt(KEY_REPEAT_TIMES, repeatTimes ?: Int.MIN_VALUE)
+            args.putInt(KEY_VOLUME, volumePercent ?: Int.MIN_VALUE)
             arguments = args
         }
     }
@@ -214,12 +214,12 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     @JvmOverloads
-    fun reset(tasks: List<Task>, repeatTimes: Int = Int.MIN_VALUE, playTime: Int = Int.MIN_VALUE) {
+    fun reset(tasks: List<Task>, repeatTimes: Int? = null, playTime: Int? = null) {
         this.tasks = ArrayList(tasks)
-        this.repeatTimes = repeatTimes
-        this.resetPlayTime = playTime
+        this.repeatTimes = repeatTimes ?: Int.MIN_VALUE
+        this.resetPlayTime = playTime ?: Int.MIN_VALUE
         repeat()
-        if (resetPlayTime == Int.MIN_VALUE && (repeatTimes == Int.MIN_VALUE || repeatTimes > 0)) {
+        if (resetPlayTime == Int.MIN_VALUE && (repeatTimes == Int.MIN_VALUE || this.repeatTimes > 0)) {
             play(0)
         }
     }
