@@ -125,8 +125,10 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         super.onHiddenChanged(hidden)
         if (hidden) {
             mediaFragment?.pause()
+            removePlaytime()
         } else {
             mediaFragment?.start()
+            postPlaytime()
         }
     }
 

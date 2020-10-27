@@ -45,16 +45,6 @@ class ImageFragment : PlayTimeMediaFragment() {
         if (!Fresco.hasBeenInitialized()) {
             Fresco.initialize(context)
         }
-        if (savedInstanceState == null) {
-            uri = arguments?.getParcelable(KEY_URI)
-        } else {
-            uri = savedInstanceState.getParcelable(KEY_URI)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_URI, uri)
     }
 
     override fun onCreateView(
