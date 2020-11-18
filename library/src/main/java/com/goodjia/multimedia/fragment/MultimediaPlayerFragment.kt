@@ -287,6 +287,14 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                     mediaFragment = clz.newInstance() as MediaFragment?
                     mediaFragment?.arguments = bundle
                 }
+                Task.ACTION_UNKNOWN -> {
+                    mediaFragment?.let {
+                        childFragmentManager.beginTransaction().remove(it)
+                        mediaFragment = null
+                    }
+                    playerListener?.onChange(if (task == null) mediaIndex else -1, playTask)
+                    return
+                }
             }
             if (mediaFragment != null) {
                 oldMediaFragment?.pause()
