@@ -2,6 +2,7 @@ package com.goodjia.multimedia.fragment.component
 
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
 import com.facebook.drawee.view.SimpleDraweeView
+import com.facebook.imagepipeline.core.ImagePipelineConfig
 import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.setResizeImage
@@ -43,7 +45,10 @@ class ImageFragment : PlayTimeMediaFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!Fresco.hasBeenInitialized()) {
-            Fresco.initialize(context)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) Fresco.initialize(
+                context, ImagePipelineConfig.newBuilder(context).setDownsampleEnabled(true).build()
+            )
+            else Fresco.initialize(context)
         }
     }
 

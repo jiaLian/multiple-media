@@ -45,7 +45,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.sprylab.android.texturevideoview:texturevideoview:1.2.1'
-    api 'com.facebook.fresco:fresco:2.2.0'
+    api 'com.facebook.fresco:fresco:2.3.0'
     api 'me.yokeyword:fragmentationx:1.0.2'
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
