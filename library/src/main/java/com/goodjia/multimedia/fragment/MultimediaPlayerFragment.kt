@@ -168,7 +168,6 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         task?.errorSet?.add(System.currentTimeMillis())
         playerListener?.onError(if (customTask == null) position else -1, task, action, message)
         checkLoopCompletion()
-        startTask()
     }
 
     override fun onPrepared() {
@@ -232,6 +231,10 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
             mediaIndex = 0
         }
         openMediaFragment()
+    }
+
+    fun next() {
+        startTask()
     }
 
     fun play(mediaIndex: Int) {
