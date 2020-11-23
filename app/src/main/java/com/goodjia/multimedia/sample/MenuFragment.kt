@@ -74,6 +74,16 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         ),
         Task(
             Task.ACTION_IMAGE,
+            "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859970149ZC7B.jpg",
+            playtime = 20
+        ),
+        Task(
+            Task.ACTION_IMAGE,
+            "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859974330Z0FE.jpg",
+            playtime = 20
+        ),
+        Task(
+            Task.ACTION_IMAGE,
             "http://cowork.coretronic.com/virtualshelf/r/admin/v1/blob/virtualshelf/org-1/image/20200707/1594085333703ZAMI.JPG",
             playtime = 10
         ),
