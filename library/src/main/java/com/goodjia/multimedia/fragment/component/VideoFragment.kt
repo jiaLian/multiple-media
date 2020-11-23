@@ -1,21 +1,24 @@
 package com.goodjia.multimedia.fragment.component
 
-import android.media.MediaPlayer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.media.AudioAttributesCompat
+import androidx.media2.common.MediaItem
+import androidx.media2.common.MediaMetadata
+import androidx.media2.common.SessionPlayer
+import androidx.media2.common.UriMediaItem
+import androidx.media2.player.MediaPlayer
 import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
 import kotlinx.android.synthetic.main.fragment_video.*
+import java.util.concurrent.Executors
 
 
-open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
-    MediaPlayer.OnErrorListener,
-    MediaPlayer.OnPreparedListener {
+open class VideoFragment : MediaFragment() {
     companion object {
         val TAG = VideoFragment::class.simpleName
         const val KEY_LAYOUT_CONTENT = "layout_content"
@@ -37,12 +40,15 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
         }
     }
 
+    private val executorService by lazy {
+        Executors.newSingleThreadExecutor()
+    }
+    private val mediaMetaData by lazy {
+        MediaMetadata.Builder().build()
+    }
+    private  var mediaPlayer: MediaPlayer?=null
+
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
-    private var mediaPlayer: MediaPlayer? = null
-    private var videoPosition: Int? = null
-        set(value) {
-            field = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) null else value
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,73 +76,75 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
         val layoutParams = videoView.layoutParams
         layoutParams.width = layoutContent
         layoutParams.height = layoutContent
-        videoView.setOnPreparedListener(this)
-        videoView.setOnCompletionListener(this)
-        videoView.setOnErrorListener(this)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        play()
-    }
+        mediaPlayer = MediaPlayer(requireContext()).apply {
+            videoView.setPlayer(this)
+        }
+        mediaPlayer?.run{
+            registerPlayerCallback(executorService,
+                object : MediaPlayer.PlayerCallback() {
+                    override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
+                        mediaCallback?.onError(Task.ACTION_VIDEO, uri?.toString() ?: "")
+                    }
 
-    override fun onPause() {
-        super.onPause()
-        if (videoView?.isPlaying == true) {
-            videoPosition = mediaPlayer?.currentPosition
+                    override fun onPlaybackCompleted(player: SessionPlayer) {
+                        repeatCount++
+                        if (repeatCount < repeatTimes) {
+                            this@VideoFragment.play()
+                            Log.d(TAG, "onPlaybackCompleted repeat $repeatCount")
+                        } else {
+                            Log.d(TAG, "onPlaybackCompleted: onCompletion")
+                            mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
+                        }
+                    }
+
+                    override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
+                        Log.d(TAG, "onPlayerStateChanged: $playerState")
+                    }
+                })
+            setAudioAttributes(AudioAttributesCompat.Builder().build())
+            uri?.let {
+                val mediaItem = UriMediaItem.Builder(it).setMetadata(mediaMetaData).build()
+                setMediaItem(mediaItem)
+                prepare().addListener({
+                    play()
+                    mediaCallback?.onPrepared()
+                }, executorService)
+            }
         }
     }
 
     override fun onDestroyView() {
-        videoView?.stopPlayback()
+        mediaPlayer?.close()
+        executorService.shutdownNow()
         super.onDestroyView()
-    }
-
-    override fun onCompletion(mp: MediaPlayer) {
-        videoPosition = null
-        repeatCount++
-        if (repeatCount < repeatTimes) {
-            play()
-            Log.d(TAG, "repeat $repeatCount")
-        } else {
-            mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
-        }
-    }
-
-    override fun onError(mediaPlayer: MediaPlayer, i: Int, i1: Int): Boolean {
-        mediaCallback?.onError(Task.ACTION_VIDEO, uri?.toString() ?: "")
-        return true
-    }
-
-    override fun onPrepared(mp: MediaPlayer?) {
-        videoPosition?.let { mp?.seekTo(it) }
-        mediaPlayer = mp
-        mediaCallback?.onPrepared()
     }
 
     override fun setVolume(volumePercent: Int) {
         val value = volumePercent / 100f
-        mediaPlayer?.setVolume(value, value)
+        mediaPlayer?.playerVolume = value
     }
 
     fun play() {
-        uri.apply {
-            videoPosition = null
-            videoView?.setVideoURI(this)
-            videoView?.start()
+        mediaPlayer?.run {
+            seekTo(0L)
+            play()
         }
     }
 
     override fun start() {
-        videoView?.start()
+        mediaPlayer?.play()
     }
 
     override fun pause() {
-        videoView?.pause()
+        mediaPlayer?.pause()
     }
 
     override fun stop() {
-        videoView?.stopPlayback()
+        mediaPlayer?.pause()
     }
 
     override fun repeat() {

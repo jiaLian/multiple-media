@@ -1,18 +1,19 @@
 package com.goodjia.multimedia.sample
 
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.fragment.BaseFragment
 import com.goodjia.multimedia.fragment.MultimediaPlayerFragment
 import com.goodjia.multimedia.fragment.component.MediaFragment
 import com.labo.kaji.fragmentanimations.CubeAnimation
 import kotlinx.android.synthetic.main.fragment_player_list.*
+import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
 import kotlin.random.Random
 
@@ -102,6 +103,6 @@ class PlayerListFragment : BaseFragment(), TaskAdapter.OnItemClickListener,
 
     override fun onError(position: Int, task: Task?, action: Int, message: String?) {
         Log.d(TAG, "onError $position, task $task, error $message")
-        toast("onError $position")
+        runOnUiThread { toast("onError $position") }
     }
 }
