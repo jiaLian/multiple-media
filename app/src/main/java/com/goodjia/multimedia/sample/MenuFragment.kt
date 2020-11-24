@@ -74,6 +74,16 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         ),
         Task(
             Task.ACTION_IMAGE,
+            "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859970149ZC7B.jpg",
+            playtime = 20
+        ),
+        Task(
+            Task.ACTION_IMAGE,
+            "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859974330Z0FE.jpg",
+            playtime = 20
+        ),
+        Task(
+            Task.ACTION_IMAGE,
             "http://cowork.coretronic.com/virtualshelf/r/admin/v1/blob/virtualshelf/org-1/image/20200707/1594085333703ZAMI.JPG",
             playtime = 10
         ),
@@ -86,17 +96,18 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
             Task.ACTION_VIDEO,
             "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
             repeatTimes = 2
-        ),
-        Task(
-            Task.ACTION_YOUTUBE,
-            "https://youtu.be/033JQZV8cJU", repeatTimes = 1
-        ),
-        Task(
-            Task.ACTION_CUSTOM, playtime = 5,
-//                    Error custom class sample
-            className = MenuFragment::class.java.name,
-            bundle = CustomTaskFragment.bundle("Custom Error")
         )
+//        ,
+//        Task(
+//            Task.ACTION_YOUTUBE,
+//            "https://youtu.be/033JQZV8cJU", repeatTimes = 1
+//        ),
+//        Task(
+//            Task.ACTION_CUSTOM, playtime = 5,
+////                    Error custom class sample
+//            className = MenuFragment::class.java.name,
+//            bundle = CustomTaskFragment.bundle("Custom Error")
+//        )
     )
     private val presentationTasks = arrayListOf(
         Task(
@@ -166,31 +177,31 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
         multimediaPlayerFragment?.playerListener =
             object : MultimediaPlayerFragment.PlayerListener {
-                override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
+                override fun onPrepared(player: MultimediaPlayerFragment) {
                     //                            val volume = Random().nextInt(100)
                     //                            Log.d(TAG, "onPrepared $volume")
                     //                        playerFragment.setVolume(volume)
                 }
 
-                override fun onLoopCompletion(repeatCount: Int) {
+                override fun onLoopCompletion(player: MultimediaPlayerFragment,repeatCount: Int) {
                     Log.d(
                         TAG,
                         "onLoopCompletion $repeatCount, finished ${multimediaPlayerFragment?.isFinished}"
                     )
                 }
 
-                override fun onFinished() {
+                override fun onFinished(player: MultimediaPlayerFragment) {
                     Log.d(TAG, "onFinished ${multimediaPlayerFragment?.isFinished}")
                 }
 
-                override fun onChange(position: Int, task: Task) {
+                override fun onChange(player: MultimediaPlayerFragment,position: Int, task: Task) {
                     Log.d(
                         TAG,
                         "onChange $position, task $task, finished ${multimediaPlayerFragment?.isFinished}"
                     )
                 }
 
-                override fun onError(
+                override fun onError(player: MultimediaPlayerFragment,
                     position: Int,
                     task: Task?,
                     action: Int,
@@ -231,23 +242,23 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         multimediaPlayerPresentation?.playerListener =
             object : MultimediaPlayerFragment.PlayerListener {
 
-                override fun onPrepared(playerFragment: MultimediaPlayerFragment) {
-                    playerFragment.setVolume(0)
+                override fun onPrepared(player: MultimediaPlayerFragment) {
+                    player.setVolume(0)
                 }
 
-                override fun onLoopCompletion(repeatCount: Int) {
+                override fun onLoopCompletion(player: MultimediaPlayerFragment,repeatCount: Int) {
                     Log.d(TAG, "presentation onLoopCompletion $repeatCount")
                 }
 
-                override fun onFinished() {
+                override fun onFinished(player: MultimediaPlayerFragment) {
                     Log.d(TAG, "presentation onFinished")
                 }
 
-                override fun onChange(position: Int, task: Task) {
+                override fun onChange(player: MultimediaPlayerFragment,position: Int, task: Task) {
                     Log.d(TAG, "presentation onChange $position, task $task")
                 }
 
-                override fun onError(
+                override fun onError(player: MultimediaPlayerFragment,
                     position: Int,
                     task: Task?,
                     action: Int,
