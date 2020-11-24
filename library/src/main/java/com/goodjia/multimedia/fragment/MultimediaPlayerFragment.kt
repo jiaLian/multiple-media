@@ -64,7 +64,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         private set(value) {
             field = value
             if (value) {
-                playerListener?.onFinished()
+                playerListener?.onFinished(this)
             }
         }
     private val completionRunnable by lazy {
@@ -166,7 +166,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
         val position = if (mediaIndex == 0) tasks.lastIndex else mediaIndex - 1
         val task = if (customTask == null) tasks[position] else customTask
         task?.errorSet?.add(System.currentTimeMillis())
-        playerListener?.onError(if (customTask == null) position else -1, task, action, message)
+        playerListener?.onError(this,if (customTask == null) position else -1, task, action, message)
         checkLoopCompletion()
     }
 
@@ -251,7 +251,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
 
     private fun checkLoopCompletion() {
         if (mediaIndex == tasks.size) {
-            playerListener?.onLoopCompletion(++repeatCount)
+            playerListener?.onLoopCompletion(this,++repeatCount)
             if (playTime == Int.MIN_VALUE && !isFinished && repeatCount == if (repeatTimes > 0) repeatTimes else 1) {
                 isFinished = true
             }
@@ -295,7 +295,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                         childFragmentManager.beginTransaction().remove(it)
                         mediaFragment = null
                     }
-                    playerListener?.onChange(if (task == null) mediaIndex else -1, playTask)
+                    playerListener?.onChange(this,if (task == null) mediaIndex else -1, playTask)
                     return
                 }
             }
@@ -303,7 +303,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
                 oldMediaFragment?.pause()
                 childFragmentManager.beginTransaction()
                     .replace(R.id.media_container, mediaFragment!!).commit()
-                playerListener?.onChange(if (task == null) mediaIndex else -1, playTask)
+                playerListener?.onChange(this,if (task == null) mediaIndex else -1, playTask)
                 task ?: mediaIndex++
             } else {
                 task ?: mediaIndex++
@@ -331,14 +331,20 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     interface PlayerListener {
-        fun onChange(position: Int, task: Task)
+        fun onChange(player: MultimediaPlayerFragment, position: Int, task: Task)
 
-        fun onError(position: Int, task: Task?, action: Int, message: String?)
+        fun onError(
+            player: MultimediaPlayerFragment,
+            position: Int,
+            task: Task?,
+            action: Int,
+            message: String?
+        )
 
-        fun onPrepared(playerFragment: MultimediaPlayerFragment)
+        fun onPrepared(player: MultimediaPlayerFragment)
 
-        fun onLoopCompletion(repeatCount: Int)
+        fun onLoopCompletion(player: MultimediaPlayerFragment, repeatCount: Int)
 
-        fun onFinished()
+        fun onFinished(player: MultimediaPlayerFragment)
     }
 }
