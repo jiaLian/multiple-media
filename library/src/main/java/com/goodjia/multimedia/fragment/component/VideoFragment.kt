@@ -2,7 +2,6 @@ package com.goodjia.multimedia.fragment.component
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import androidx.media2.common.UriMediaItem
 import androidx.media2.player.MediaPlayer
 import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
+import com.goodjia.utility.Logger
 import kotlinx.android.synthetic.main.fragment_video.*
 import java.util.concurrent.Executors
 
@@ -46,7 +46,7 @@ open class VideoFragment : MediaFragment() {
     private val mediaMetaData by lazy {
         MediaMetadata.Builder().build()
     }
-    private  var mediaPlayer: MediaPlayer?=null
+    private var mediaPlayer: MediaPlayer? = null
 
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
 
@@ -82,11 +82,10 @@ open class VideoFragment : MediaFragment() {
         super.onActivityCreated(savedInstanceState)
         mediaPlayer = MediaPlayer(requireContext()).apply {
             videoView.setPlayer(this)
-        }
-        mediaPlayer?.run{
             registerPlayerCallback(executorService,
                 object : MediaPlayer.PlayerCallback() {
                     override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
+                        Logger.d(TAG, "onError $item,$what,$extra")
                         mediaCallback?.onError(Task.ACTION_VIDEO, uri?.toString() ?: "")
                     }
 
@@ -94,15 +93,15 @@ open class VideoFragment : MediaFragment() {
                         repeatCount++
                         if (repeatCount < repeatTimes) {
                             this@VideoFragment.play()
-                            Log.d(TAG, "onPlaybackCompleted repeat $repeatCount")
+                            Logger.d(TAG, "onPlaybackCompleted repeat $repeatCount")
                         } else {
-                            Log.d(TAG, "onPlaybackCompleted: onCompletion")
+                            Logger.d(TAG, "onPlaybackCompleted: onCompletion")
                             mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
                         }
                     }
 
                     override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
-                        Log.d(TAG, "onPlayerStateChanged: $playerState")
+                        Logger.d(TAG, "onPlayerStateChanged: $playerState")
                     }
                 })
             setAudioAttributes(AudioAttributesCompat.Builder().build())

@@ -3,7 +3,6 @@ package com.goodjia.multimedia.sample
 import android.Manifest
 import android.hardware.display.DisplayManager
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +30,7 @@ import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 @RuntimePermissions
-class MenuFragment : BaseFragment(), View.OnClickListener {
+class MenuFragment : BaseFragment() {
     companion object {
         val TAG = MenuFragment::class.java.simpleName
         fun newInstance() = MenuFragment()
@@ -75,12 +74,12 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         Task(
             Task.ACTION_IMAGE,
             "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859970149ZC7B.jpg",
-            playtime = 20
+            playtime = 10
         ),
         Task(
             Task.ACTION_IMAGE,
             "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859974330Z0FE.jpg",
-            playtime = 20
+            playtime = 10
         ),
         Task(
             Task.ACTION_IMAGE,
@@ -94,20 +93,23 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
         ),
         Task(
             Task.ACTION_VIDEO,
+            "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/1/20201019/1603094235932ZMTJ.mp4",
+        ),
+        Task(
+            Task.ACTION_VIDEO,
             "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
             repeatTimes = 2
+        ),
+        Task(
+            Task.ACTION_YOUTUBE,
+            "https://youtu.be/033JQZV8cJU", repeatTimes = 1
+        ),
+        Task(
+            Task.ACTION_CUSTOM, playtime = 5,
+//                    Error custom class sample
+            className = MenuFragment::class.java.name,
+            bundle = CustomTaskFragment.bundle("Custom Error")
         )
-//        ,
-//        Task(
-//            Task.ACTION_YOUTUBE,
-//            "https://youtu.be/033JQZV8cJU", repeatTimes = 1
-//        ),
-//        Task(
-//            Task.ACTION_CUSTOM, playtime = 5,
-////                    Error custom class sample
-//            className = MenuFragment::class.java.name,
-//            bundle = CustomTaskFragment.bundle("Custom Error")
-//        )
     )
     private val presentationTasks = arrayListOf(
         Task(
@@ -138,17 +140,6 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
     private var progress: Int = 0
     private var multimediaPlayerFragment: MultimediaPlayerFragment? = null
     private var multimediaPlayerPresentation: MultimediaPlayerPresentation? = null
-
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.btnMultimediaPlayer -> {
-                openPlayerFragment()
-                showPresentation()
-            }
-            R.id.btnYoutube -> start(YoutubeFragment.newInstance("https://youtu.be/033JQZV8cJU"))
-            R.id.btnPlayerList -> start(PlayerListFragment.newInstance(tasks))
-        }
-    }
 
     private fun openPlayerFragment() {
         multimediaPlayerFragment =
@@ -183,7 +174,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     //                        playerFragment.setVolume(volume)
                 }
 
-                override fun onLoopCompletion(player: MultimediaPlayerFragment,repeatCount: Int) {
+                override fun onLoopCompletion(player: MultimediaPlayerFragment, repeatCount: Int) {
                     Log.d(
                         TAG,
                         "onLoopCompletion $repeatCount, finished ${multimediaPlayerFragment?.isFinished}"
@@ -194,14 +185,15 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     Log.d(TAG, "onFinished ${multimediaPlayerFragment?.isFinished}")
                 }
 
-                override fun onChange(player: MultimediaPlayerFragment,position: Int, task: Task) {
+                override fun onChange(player: MultimediaPlayerFragment, position: Int, task: Task) {
                     Log.d(
                         TAG,
                         "onChange $position, task $task, finished ${multimediaPlayerFragment?.isFinished}"
                     )
                 }
 
-                override fun onError(player: MultimediaPlayerFragment,
+                override fun onError(
+                    player: MultimediaPlayerFragment,
                     position: Int,
                     task: Task?,
                     action: Int,
@@ -246,7 +238,7 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     player.setVolume(0)
                 }
 
-                override fun onLoopCompletion(player: MultimediaPlayerFragment,repeatCount: Int) {
+                override fun onLoopCompletion(player: MultimediaPlayerFragment, repeatCount: Int) {
                     Log.d(TAG, "presentation onLoopCompletion $repeatCount")
                 }
 
@@ -254,11 +246,12 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
                     Log.d(TAG, "presentation onFinished")
                 }
 
-                override fun onChange(player: MultimediaPlayerFragment,position: Int, task: Task) {
+                override fun onChange(player: MultimediaPlayerFragment, position: Int, task: Task) {
                     Log.d(TAG, "presentation onChange $position, task $task")
                 }
 
-                override fun onError(player: MultimediaPlayerFragment,
+                override fun onError(
+                    player: MultimediaPlayerFragment,
                     position: Int,
                     task: Task?,
                     action: Int,
@@ -286,9 +279,19 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnMultimediaPlayer.setOnClickListener(this)
-        btnYoutube.setOnClickListener(this)
-        btnPlayerList.setOnClickListener(this)
+        btnMultimediaPlayer.setOnClickListener {
+            openPlayerFragment()
+            showPresentation()
+        }
+        btnDualMultimediaPlayer.setOnClickListener {
+            start(DualPlayerFragment.newInstance(tasks))
+        }
+        btnYoutube.setOnClickListener {
+            start(YoutubeFragment.newInstance("https://youtu.be/033JQZV8cJU"))
+        }
+        btnPlayerList.setOnClickListener {
+            start(PlayerListFragment.newInstance(tasks))
+        }
     }
 
     override fun onDestroyView() {
@@ -297,15 +300,14 @@ class MenuFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun initTasks(vararg taskList: ArrayList<Task>) {
-        taskList.forEachIndexed { index, arrayList ->
-            var task: Task
-            val size = arrayList.size
-            for (i in 0 until size) {
-                task = arrayList[i]
+        taskList.forEach { arrayList ->
+            arrayList.forEach { task ->
                 if (task.action == Task.ACTION_VIDEO) {
                     task.filePath =
-                        Environment.getExternalStorageDirectory().absolutePath + File.separatorChar +
-                                activity?.packageName + File.separatorChar + index + i
+                        requireContext().getExternalFilesDir(null)?.absolutePath + File.separatorChar +
+                                task.url?.substringAfterLast(
+                                    "/"
+                                )
                     downloadTaskSet.add(task)
                 }
             }
