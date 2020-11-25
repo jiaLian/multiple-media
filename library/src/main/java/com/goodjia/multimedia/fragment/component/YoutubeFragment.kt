@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.goodjia.multimedia.Task
 import com.goodjia.multimedia.extractVideoIdFromUrl
+import com.goodjia.utility.Logger
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
@@ -63,7 +64,7 @@ class YoutubeFragment : MediaFragment() {
                 repeatCount++
                 if (repeatCount < repeatTimes) {
                     repeat()
-                    Log.d(TAG, "repeat $repeatCount")
+                    Logger.d(TAG, "repeat $repeatCount")
                 } else {
                     mediaCallback?.onCompletion(Task.ACTION_YOUTUBE, url)
                 }

@@ -16,6 +16,7 @@ import com.goodjia.multimedia.fragment.component.MediaFragment.Companion.KEY_REP
 import com.goodjia.multimedia.fragment.component.VideoFragment
 import com.goodjia.multimedia.fragment.component.VideoFragment.Companion.KEY_LAYOUT_CONTENT
 import com.goodjia.multimedia.fragment.component.YoutubeFragment
+import com.goodjia.utility.Logger
 
 
 open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallback,
@@ -148,7 +149,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     override fun onCompletion(action: Int, message: String?) {
-        Log.d(TAG, "onCompletion: action $action, $message")
+        Logger.d(TAG, "onCompletion: action $action, $message")
         checkLoopCompletion()
         if (tasks.size == 1) {
             when (mediaFragment) {
@@ -162,7 +163,7 @@ open class MultimediaPlayerFragment : BaseFragment(), MediaFragment.MediaCallbac
     }
 
     override fun onError(action: Int, message: String?) {
-        Log.d(TAG, "onError: action $action, $message")
+        Logger.d(TAG, "onError: action $action, $message")
         val position = if (mediaIndex == 0) tasks.lastIndex else mediaIndex - 1
         val task = if (customTask == null) tasks[position] else customTask
         task?.errorSet?.add(System.currentTimeMillis())

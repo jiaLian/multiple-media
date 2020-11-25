@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.goodjia.multimedia.R
 import com.goodjia.multimedia.Task
+import com.goodjia.utility.Logger
 import kotlinx.android.synthetic.main.fragment_video.*
 
 
@@ -97,7 +98,7 @@ open class VideoFragment : MediaFragment(), MediaPlayer.OnCompletionListener,
         repeatCount++
         if (repeatCount < repeatTimes) {
             play()
-            Log.d(TAG, "repeat $repeatCount")
+            Logger.d(TAG, "repeat $repeatCount")
         } else {
             mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
         }
