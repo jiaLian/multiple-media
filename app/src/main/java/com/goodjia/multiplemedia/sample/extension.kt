@@ -48,22 +48,8 @@ val TASKS = arrayListOf(
     ),
     Task(
         Task.ACTION_IMAGE,
-        "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859974330Z0FE.jpg",
-        playtime = 10
-    ),
-    Task(
-        Task.ACTION_IMAGE,
-        "http://cowork.coretronic.com/virtualshelf/r/admin/v1/blob/virtualshelf/org-1/image/20200707/1594085333703ZAMI.JPG",
-        playtime = 10
-    ),
-    Task(
-        Task.ACTION_IMAGE,
         "https://images.freeimages.com/images/large-previews/adf/sun-burst-1478549.jpg",
         playtime = 10
-    ),
-    Task(
-        Task.ACTION_VIDEO,
-        "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/1/20201019/1603094235932ZMTJ.mp4",
     ),
     Task(
         Task.ACTION_VIDEO,
@@ -86,11 +72,6 @@ val PRESENTATION_TASKS = arrayListOf(
         Task.ACTION_IMAGE,
         "https://www.sripanwa.com/wp-content/uploads/view-2/7-View-Gallery-Sri-Panwa-Luxury-Hotel-Phuket-Resort-3000x1688.jpg",
         playtime = 5
-    ),
-    Task(
-        Task.ACTION_IMAGE,
-        "http://cowork.coretronic.com/virtualshelf/r/admin/v1/blob/virtualshelf/org-1/image/20200707/1594085333703ZAMI.JPG",
-        playtime = 3
     ),
     Task(
         Task.ACTION_CUSTOM, playtime = 10,

@@ -59,7 +59,7 @@ tasks = arrayListOf(
         Task(Task.ACTION_YOUTUBE, "https://youtu.be/nSbCMxSaBaw",repeatTimes = 2)
         )
 ````
-**4. Start MultimediaPlayerFragment**
+**4. MultimediaPlayerFragment**
 ````kotlin
 //Video source size: Wrap content (origin center);Set repeatTimes or playtime
 /*val multimediaPlayerFragment = 
@@ -137,7 +137,6 @@ val multimediaPlayerFragment =
                         Log.d(TAG, "onError $position, task $task, error $message")
                     }
                 }
-                start(multimediaPlayerFragment)
 ````
 **5. Show MultimediaPlayerPresentation (Secondary Screen)**
 ````kotlin
