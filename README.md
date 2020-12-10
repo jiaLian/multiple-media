@@ -27,7 +27,7 @@ allprojects {
 implementation 'com.goodjia:multiplemedia:{_latestVersion}'
 or
 // When you never use MultimediaPlayerPresentation class
-implementation('com.goodjia:multimedia:{_latestVersion}') {
+implementation('com.goodjia:multiplemedia:{_latestVersion}') {
         exclude group: 'com.commonsware.cwac', module: 'presentation.x'
 }
 ````
