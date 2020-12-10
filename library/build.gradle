@@ -1,20 +1,21 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
 
-def verCode = 43
-def verName = "1.3.20"
+def verCode = 45
+def verName = "2.0.0"
 
 androidExtensions {
     experimental = true
 }
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode verCode
         versionName verName
 
@@ -37,7 +38,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.material:material:1.2.1'
     testImplementation 'junit:junit:4.13.1'
@@ -46,20 +47,78 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.sprylab.android.texturevideoview:texturevideoview:1.2.1'
     api 'com.facebook.fresco:fresco:2.3.0'
-    api 'me.yokeyword:fragmentationx:1.0.2'
+    api 'me.xuexuan:fragmentationx:1.0.6'
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     api 'com.labo.kaji:fragmentanimations:0.1.1'
-    api 'com.commonsware.cwac:presentation.x:0.6.1'
     implementation 'com.goodjia:utility:1.3.11'
+    api 'com.commonsware.cwac:presentation.x:0.6.1'
 }
 
-publish {
-    userOrg = 'jialian'           //bintray注册的用户名
-    repoName = 'goodJia'           //bintray仓库名
-    groupId = 'com.goodjia'
-    artifactId = 'multimedia'
-    publishVersion = verName
-    desc = 'This is a multimedia library'
-    website = 'https://github.com/jiaLian/GjMultimedia'
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+def artifact_group = 'com.goodjia'
+def artifact_id = 'multiplemedia'
+def repoName = 'goodJia'
+def siteUrl = 'https://github.com/jiaLian/multiple-media' // 项目主页。
+def gitUrl = 'git@github.com:jiaLian/multiple-media.git' // Git仓库的url。
+def descr = "This is a multiple media library"
+def author = "jia.lian"
+
+group = artifact_group
+version = verName
+
+bintray {
+    user = properties.getProperty("bintray.user") // Bintray的用户名。
+    key = properties.getProperty("bintray.apikey") // Bintray刚才保存的ApiKey。
+    configurations = ['archives']
+    pkg {
+        repo = repoName
+        // 上传到maven库。（这里要特别注意，如果写了maven报404错误，请在bintray创建一个仓库，这里填改成你创建的仓库的名字，如何创建请看下图。）
+        name = artifact_id
+        // 发布到Bintray上的项目名字，这里的名字不是compile 'com.yanzhenjie:andserver:1.0.1'中的andserver。
+        desc = descr
+        userOrg = properties.getProperty("bintray.user") // Bintray的用户名，2016年11月更新。
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true // 是否是公开项目。
+        version {
+            name = verName //Bintray logical version name
+        }
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name artifact_id
+            description descr
+            url siteUrl
+
+            packaging 'aar'
+            groupId artifact_group
+            artifactId artifact_id
+            version verName
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                }
+            }
+            scm {
+                connection gitUrl
+                url siteUrl
+
+            }
+            developers {
+                developer {
+                    name author
+                }
+            }
+        }
+    }
 }

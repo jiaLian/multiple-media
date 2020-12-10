@@ -4,22 +4,26 @@
     android:layout_width="match_parent"
     android:background="@android:color/black"
     android:layout_height="match_parent">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container1"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostFragment1"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/container2"
+        app:layout_constraintBottom_toTopOf="@id/navHostFragment2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:defaultNavHost="false"
+        app:navGraph="@navigation/nav_player" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/navHostFragment2"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/container1" />
+        app:layout_constraintTop_toBottomOf="@id/navHostFragment1"
+        app:defaultNavHost="false"
+        app:navGraph="@navigation/nav_player" />
 </androidx.constraintlayout.widget.ConstraintLayout>

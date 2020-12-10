@@ -1,4 +1,4 @@
-[![Download](https://api.bintray.com/packages/jialian/goodJia/multimedia/images/download.svg) ](https://bintray.com/jialian/goodJia/multimedia/_latestVersion)
+[![Download](https://api.bintray.com/packages/jialian/goodJia/multiplemedia/images/download.svg) ](https://bintray.com/jialian/goodJia/multiplemedia/_latestVersion)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # Multiple Media Component
@@ -16,8 +16,6 @@ It is fragment player.
 allprojects {
     repositories {
         ...
-        maven { url "https://dl.bintray.com/jialian/goodJia" }
-        
         // Used to MultimediaPlayerPresentation class (optional)
         maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
     }
@@ -26,9 +24,7 @@ allprojects {
 
 **2. app/build.gradle**
 ````gradle
-implementation 'com.goodjia:multimedia:'0.1.4.1'      //this is use of android.support
-or
-implementation 'com.goodjia:multimedia:'{_latestVersion}'      //this is use of androidx
+implementation 'com.goodjia:multiplemedia:'{_latestVersion}'      //this is use of androidx
 ````
 
 **3. Task, create task list**
@@ -140,11 +136,11 @@ val multimediaPlayerFragment =
 ````
 **5. Show MultimediaPlayerPresentation (Secondary Screen)**
 ````kotlin
-context?.displayManager?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+(context?.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager?)?.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
             ?.get(0)?.let {
                 multimediaPlayerPresentation = MultimediaPlayerPresentation.newInstance(
                     context!!,
-                    it, presentationTasks
+                    it, tasks
                 )
             }
 

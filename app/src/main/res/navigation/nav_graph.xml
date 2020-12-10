@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/menuFragment">
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="com.goodjia.multiplemedia.sample.MenuFragment"
+        android:label="MenuFragment">
+        <action
+            android:id="@+id/action_menuFragment_to_myPlayerFragment"
+            app:destination="@id/myPlayerFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_youtubeFragment"
+            app:destination="@id/youtubeFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_dualPlayerFragment"
+            app:destination="@id/dualPlayerFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_playerListFragment"
+            app:destination="@id/playerListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/myPlayerFragment"
+        android:name="com.goodjia.multiplemedia.sample.MyPlayerFragment"
+        android:label="MyPlayerFragment" />
+    <fragment
+        android:id="@+id/youtubeFragment"
+        android:name="com.goodjia.multiplemedia.fragment.component.YoutubeFragment"
+        android:label="YoutubeFragment" />
+    <fragment
+        android:id="@+id/playerListFragment"
+        android:name="com.goodjia.multiplemedia.sample.PlayerListFragment"
+        android:label="PlayerListFragment" />
+    <fragment
+        android:id="@+id/dualPlayerFragment"
+        android:name="com.goodjia.multiplemedia.sample.DualPlayerFragment"
+        android:label="DualPlayerSupportFragment" />
+</navigation>

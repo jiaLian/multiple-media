@@ -1,9 +1,6 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
 
 androidExtensions {
     experimental = true
@@ -11,11 +8,11 @@ androidExtensions {
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.goodjia.multimedia.sample"
+        applicationId "com.goodjia.multiplemedia.sample"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 5
-        versionName "1.2.7"
+        versionCode 7
+        versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -29,32 +26,29 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    ndkVersion '22.0.6917172 rc1'
+    packagingOptions {
+        exclude 'META-INF/library_release.kotlin_module'
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
-    implementation('com.github.hotchemi:permissionsdispatcher:3.3.1') {
-        exclude module: "support-v13"
-    }
-    kapt 'com.github.hotchemi:permissionsdispatcher-processor:3.3.1'
     implementation 'com.liulishuo.filedownloader:library:1.7.7'
     implementation 'com.github.maning0303:MNProgressHUD:V1.0.5'
-    implementation('org.jetbrains.anko:anko:0.10.8') {
-        exclude group: "com.android.support"
-    }
-//    implementation 'com.goodjia:multimedia:1.3.15'
-    implementation (project(':library')) {
+    implementation('com.goodjia:multiplemedia:2.0.0') {
         exclude group: 'com.goodjia', module: 'utility'
     }
+//    implementation (project(':library')) {
+//        exclude group: 'com.goodjia', module: 'utility'
+//    }
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.goodjia:utility:1.3.11'
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
 }
