@@ -62,10 +62,11 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 def artifact_group = 'com.goodjia'
 def artifact_id = 'multiplemedia'
 def repoName = 'goodJia'
-def siteUrl = 'https://github.com/jiaLian/multiple-media' // 项目主页。
-def gitUrl = 'git@github.com:jiaLian/multiple-media.git' // Git仓库的url。
+def siteUrl = 'https://github.com/jiaLian/multiple-media' // Git仓库的url。
+def gitUrl = 'https://github.com/jiaLian/multiple-media.git' // Git仓库的url。
 def descr = "This is a multiple media library"
 def author = "jia.lian"
+def mail = "lianjiayou@gmail.com"
 
 group = artifact_group
 version = verName
@@ -81,7 +82,6 @@ bintray {
         // 发布到Bintray上的项目名字，这里的名字不是compile 'com.yanzhenjie:andserver:1.0.1'中的andserver。
         desc = descr
         userOrg = properties.getProperty("bintray.user") // Bintray的用户名，2016年11月更新。
-        websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
         publish = true // 是否是公开项目。
@@ -96,8 +96,6 @@ install {
         pom.project {
             name artifact_id
             description descr
-            url siteUrl
-
             packaging 'aar'
             groupId artifact_group
             artifactId artifact_id
@@ -112,13 +110,34 @@ install {
             scm {
                 connection gitUrl
                 url siteUrl
-
             }
             developers {
                 developer {
                     name author
+                    email mail
                 }
             }
         }
     }
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from android.sourceSets.main.java.srcDirs
+}
+
+//task javadoc(type: Javadoc) {
+//    failOnError false
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    archiveClassifier.set("javadoc")
+//    from javadoc.destinationDir
+//}
+
+artifacts {
+//    archives javadocJar
+    archives sourcesJar
 }

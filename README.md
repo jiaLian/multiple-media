@@ -24,7 +24,12 @@ allprojects {
 
 **2. app/build.gradle**
 ````gradle
-implementation 'com.goodjia:multiplemedia:'{_latestVersion}'      //this is use of androidx
+implementation 'com.goodjia:multiplemedia:{_latestVersion}'
+or
+// When you never use MultimediaPlayerPresentation class
+implementation('com.goodjia:multimedia:{_latestVersion}') {
+        exclude group: 'com.commonsware.cwac', module: 'presentation.x'
+}
 ````
 
 **3. Task, create task list**
