@@ -43,11 +43,6 @@ val TASKS = arrayListOf(
     ),
     Task(
         Task.ACTION_IMAGE,
-        "http://cowork.coretronic.com/pcloudplus-api/r/admin/v1/blob/adplayer2/org-1/0/20201120/1605859970149ZC7B.jpg",
-        playtime = 10
-    ),
-    Task(
-        Task.ACTION_IMAGE,
         "https://images.freeimages.com/images/large-previews/adf/sun-burst-1478549.jpg",
         playtime = 10
     ),

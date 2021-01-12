@@ -212,11 +212,6 @@ isVideoFile(filename)
 isImageFile(filename)
 ````
 
-**.. Start Youtube Fragment**
-````kotlin
-start(YoutubeFragment.newInstance("https://www.youtube.com/watch?v=IduYAx4ptNU"))
-````
-
 ## LICENSE
 ````
 Copyright 2018 Jia

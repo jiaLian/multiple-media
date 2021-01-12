@@ -42,12 +42,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.liulishuo.filedownloader:library:1.7.7'
     implementation 'com.github.maning0303:MNProgressHUD:V1.0.5'
-    implementation('com.goodjia:multiplemedia:2.0.0') {
-        exclude group: 'com.goodjia', module: 'utility'
-    }
-//    implementation (project(':library')) {
+//    implementation('com.goodjia:multiplemedia:2.0.0') {
 //        exclude group: 'com.goodjia', module: 'utility'
 //    }
+    implementation(project(':library')) {
+        exclude group: 'com.goodjia', module: 'utility'
+    }
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.goodjia:utility:1.3.11'
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
