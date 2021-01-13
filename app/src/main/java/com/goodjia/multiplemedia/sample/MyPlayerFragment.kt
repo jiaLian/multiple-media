@@ -76,7 +76,9 @@ class MyPlayerFragment : MultimediaPlayerFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (tasks.isEmpty()) { tasks = ArrayList(TASKS.shuffled()) }
+        if (tasks.isEmpty()) {
+            tasks = ArrayList(TASKS.shuffled())
+        }
     }
 
     override fun onError(action: Int, message: String?) {

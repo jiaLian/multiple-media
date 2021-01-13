@@ -17,7 +17,6 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     companion object {
         val TAG = VideoFragment::class.simpleName
         const val KEY_LAYOUT_CONTENT = "layout_content"
-        const val KEY_PRELOAD = "preload"
 
         @JvmStatic
         @JvmOverloads
@@ -46,7 +45,6 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
-    private var isPreload: Boolean = false
     private var mediaPlayer: MediaPlayer? = null
     private var videoPosition: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,16 +53,11 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
             savedInstanceState?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 ?: (arguments?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
                     ?: ViewGroup.LayoutParams.MATCH_PARENT)
-        isPreload =
-            savedInstanceState?.getBoolean(KEY_PRELOAD, false)
-                ?: arguments?.getBoolean(KEY_PRELOAD, false) ?: false
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
-        outState.putBoolean(KEY_PRELOAD, isPreload)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,12 +69,6 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         videoView.setOnCompletionListener(this)
         videoView.setOnErrorListener(this)
         play()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        Logger.d(TAG, "onHiddenChanged: $hidden $this")
-        if (!hidden) start() else pause()
     }
 
     override fun onPause() {
@@ -130,9 +117,9 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         mediaPlayer?.setVolume(value, value)
     }
 
-    fun playPreload() {
+    override fun playPreload() {
+        super.playPreload()
         Logger.d(TAG, "disablePrepare $this")
-        isPreload = false
         mediaPlayer?.let {
             Logger.d(TAG, "disablePrepare mediaPlayer $this")
             mediaCallback?.onPrepared()

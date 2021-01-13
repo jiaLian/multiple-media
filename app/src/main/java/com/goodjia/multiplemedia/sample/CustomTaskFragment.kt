@@ -27,5 +27,8 @@ class CustomTaskFragment : PlayTimeMediaFragment(R.layout.fragment_custom) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         tvTitle.text = id
+        if (isPreload) {
+            parentFragmentManager.beginTransaction().hide(this).commit()
+        }
     }
 }

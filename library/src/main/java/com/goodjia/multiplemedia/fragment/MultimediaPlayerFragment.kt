@@ -39,7 +39,7 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             playTime: Int? = null,
             volumePercent: Int? = null, preload: Boolean = false
         ) = MultimediaPlayerFragment().apply {
-            arguments = bundle(tasks, layoutContent, repeatTimes, playTime, volumePercent)
+            arguments = bundle(tasks, layoutContent, repeatTimes, playTime, volumePercent, preload)
         }
 
         @JvmStatic
@@ -72,10 +72,10 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
     private var resetPlayTime: Int = Int.MIN_VALUE
     private var playTime: Int = Int.MIN_VALUE
     private var volumePercent: Int = Int.MIN_VALUE
-    private var preload: Boolean = false
+    protected var isPreload: Boolean = false
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
-        get() = if (preload) null else field
+        get() = if (isPreload) null else field
     var isFinished = false
         private set(value) {
             field = value
@@ -102,7 +102,7 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             resetPlayTime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
             repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
             volumePercent = arguments?.getInt(KEY_VOLUME) ?: Int.MIN_VALUE
-            preload = arguments?.getBoolean(KEY_PRELOAD, false) ?: false
+            isPreload = arguments?.getBoolean(KEY_PRELOAD, false) ?: false
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
             layoutContent =
@@ -114,7 +114,7 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             resetPlayTime = savedInstanceState.getInt(KEY_PLAY_TIME)
             repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
             volumePercent = savedInstanceState.getInt(KEY_VOLUME)
-            preload = savedInstanceState.getBoolean(KEY_PRELOAD, false) ?: false
+            isPreload = savedInstanceState.getBoolean(KEY_PRELOAD, false) ?: false
         }
     }
 
@@ -125,7 +125,7 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         outState.putInt(KEY_PLAY_TIME, playTime)
         outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
         outState.putInt(KEY_VOLUME, volumePercent)
-        outState.putBoolean(KEY_PRELOAD, preload)
+        outState.putBoolean(KEY_PRELOAD, isPreload)
     }
 
     override fun onCreateView(
@@ -279,7 +279,9 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         openMediaFragment()
     }
 
-    fun play(task: Task?) {
+    @JvmOverloads
+    fun play(task: Task?, preloadCustomTask: Task? = null) {
+        this.preloadCustomTask = preloadCustomTask
         task ?: return
         stop()
         openMediaFragment(task)
@@ -294,7 +296,8 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         }
     }
 
-    var preloadVideoFragment: VideoFragment? = null
+    protected var preloadCustomTask: Task? = null
+    protected var preloadFragment: MediaFragment? = null
 
     private fun openMediaFragment(task: Task? = null) {
         customTask = task
@@ -305,12 +308,11 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             when (action) {
                 Task.ACTION_VIDEO ->
                     mediaFragment =
-                        if (!preload || preloadVideoFragment == null) VideoFragment.newInstance(
+                        if (isPreload && playTask == preloadFragment?.preloadTask) preloadFragment else VideoFragment.newInstance(
                             playTask.getFileUri(),
                             layoutContent,
                             repeatTimes = playTask.repeatTimes
                         )
-                        else preloadVideoFragment
 
                 Task.ACTION_IMAGE -> mediaFragment =
                     ImageFragment.newInstance(playTask.getFileUri(), playTask.playtime)
@@ -323,12 +325,15 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
                     )
 
                 Task.ACTION_CUSTOM -> {
-                    playTask.className ?: return
-                    val clz = Class.forName(playTask.className)
-                    val bundle = playTask.bundle ?: Bundle()
-                    bundle.putInt(MediaFragment.KEY_PLAY_TIME, playTask.playtime)
-                    mediaFragment = clz.newInstance() as MediaFragment?
-                    mediaFragment?.arguments = bundle
+                    if (isPreload && playTask == preloadFragment?.preloadTask) mediaFragment =
+                        preloadFragment else {
+                        playTask.className ?: return
+                        val clz = Class.forName(playTask.className)
+                        val bundle = playTask.bundle ?: Bundle()
+                        bundle.putInt(MediaFragment.KEY_PLAY_TIME, playTask.playtime)
+                        mediaFragment = clz.newInstance() as MediaFragment?
+                        mediaFragment?.arguments = bundle
+                    }
                 }
                 Task.ACTION_UNKNOWN -> {
                     mediaFragment?.let {
@@ -342,22 +347,25 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
 
             if (mediaFragment != null) {
                 val fragmentTransaction = childFragmentManager.beginTransaction()
-                if (mediaFragment == preloadVideoFragment) {
+                if (mediaFragment == preloadFragment) {
                     Logger.d(TAG, "show")
                     oldMediaFragment?.let {
-                        if (oldMediaFragment != preloadVideoFragment) fragmentTransaction.detach(it)
+                        Logger.d(TAG, "remove old")
+                        fragmentTransaction.detach(it)
                     }
-                    addPreloadVideoFragment(fragmentTransaction)
+                    addPreloadFragment(fragmentTransaction)
                     fragmentTransaction.show(mediaFragment!!)
-                    (mediaFragment as VideoFragment).playPreload()
+                    mediaFragment?.playPreload()
                 } else {
-                    oldMediaFragment?.pause()
-                    addPreloadVideoFragment(fragmentTransaction)
-                    if (preloadVideoFragment == null) {
+                    addPreloadFragment(fragmentTransaction)
+                    if (preloadFragment == null) {
                         Logger.d(TAG, "replace task")
                         fragmentTransaction.replace(R.id.media_container, mediaFragment!!)
                     } else {
                         Logger.d(TAG, "add task")
+                        oldMediaFragment?.let {
+                            fragmentTransaction.detach(it)
+                        }
                         fragmentTransaction.add(R.id.media_container, mediaFragment!!)
                     }
                 }
@@ -377,29 +385,64 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         }
     }
 
-    private fun addPreloadVideoFragment(fragmentTransaction: FragmentTransaction) {
-        if (!preload) {
-            preloadVideoFragment = null
+    private fun addPreloadFragment(fragmentTransaction: FragmentTransaction) {
+        if (!isPreload) {
+            preloadFragment = null
             return
         }
 
         val nextIndex = if (mediaIndex + 1 > tasks.lastIndex)
             0 else mediaIndex + 1
-
-        tasks[nextIndex].let {
-            if (it.action == Task.ACTION_VIDEO && mediaIndex != nextIndex) {
-                preloadVideoFragment =
-                    VideoFragment.newInstance(
-                        it.getFileUri(),
-                        layoutContent,
-                        repeatTimes = it.repeatTimes,
-                        preload = true
+        val preloadTask = when {
+            preloadCustomTask != null -> preloadCustomTask
+            tasks.isNotEmpty() -> tasks[nextIndex]
+            else -> null
+        }
+        preloadTask.let {
+            if (it == null) {
+                preloadFragment = null
+            } else if (tasks.isNullOrEmpty() || mediaIndex != nextIndex) {
+                preloadFragment =
+                    try {
+                        when (it.action) {
+                            Task.ACTION_VIDEO ->
+                                VideoFragment.newInstance(
+                                    it.getFileUri(),
+                                    layoutContent,
+                                    repeatTimes = it.repeatTimes,
+                                    preload = true
+                                )
+                            Task.ACTION_CUSTOM -> {
+                                if (it.preload) {
+                                    val clz = Class.forName(it.className)
+                                    val bundle = it.bundle ?: Bundle()
+                                    bundle.putInt(MediaFragment.KEY_PLAY_TIME, it.playtime)
+                                    bundle.putBoolean(KEY_PRELOAD, true)
+                                    (clz.newInstance() as MediaFragment?)?.apply {
+                                        arguments = bundle
+                                    }
+                                } else null
+                            }
+                            else -> null
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
+                    }
+                preloadFragment?.let {
+                    it.preloadTask = preloadTask
+                    fragmentTransaction.add(R.id.media_container, preloadFragment!!)
+                    Logger.d(
+                        TAG,
+                        "add ${if (preloadTask!!.action == Task.ACTION_VIDEO) "video" else "custom"} preload"
                     )
-                fragmentTransaction.add(R.id.media_container, preloadVideoFragment!!)
-                Logger.d(TAG, "add preoload video")
+                }
             } else {
-                preloadVideoFragment = null
+                preloadFragment = null
             }
+        }
+        if (preloadTask == preloadCustomTask) {
+            preloadCustomTask = null
         }
     }
 
