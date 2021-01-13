@@ -22,9 +22,9 @@ open class MultimediaPlayerSupportFragment : MultimediaPlayerFragment(), ISuppor
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
             repeatTimes: Int? = null,
             playTime: Int? = null,
-            volumePercent: Int? = null
+            volumePercent: Int? = null, preload: Boolean = false
         ) = MultimediaPlayerSupportFragment().apply {
-            arguments = bundle(tasks, layoutContent, repeatTimes, playTime, volumePercent)
+            arguments = bundle(tasks, layoutContent, repeatTimes, playTime, volumePercent, preload)
         }
     }
 
