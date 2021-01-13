@@ -17,15 +17,17 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     companion object {
         val TAG = VideoFragment::class.simpleName
         const val KEY_LAYOUT_CONTENT = "layout_content"
+        const val KEY_PRELOAD = "preload"
 
         @JvmStatic
         @JvmOverloads
         fun newInstance(
             uri: Uri,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
-            repeatTimes: Int = 1
+            repeatTimes: Int = 1,
+            preload: Boolean = false
         ) = VideoFragment().apply {
-            arguments = bundle(uri, layoutContent, repeatTimes)
+            arguments = bundle(uri, layoutContent, repeatTimes, preload)
         }
 
         @JvmStatic
@@ -33,15 +35,18 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         fun bundle(
             uri: Uri,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
-            repeatTimes: Int = 1
+            repeatTimes: Int = 1,
+            preload: Boolean = false
         ) = Bundle().apply {
             putParcelable(KEY_URI, uri)
             putInt(KEY_LAYOUT_CONTENT, layoutContent)
             putInt(KEY_REPEAT_TIMES, repeatTimes)
+            putBoolean(KEY_PRELOAD, preload)
         }
     }
 
     private var layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT
+    private var isPreload: Boolean = false
     private var mediaPlayer: MediaPlayer? = null
     private var videoPosition: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,11 +55,16 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
             savedInstanceState?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 ?: (arguments?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
                     ?: ViewGroup.LayoutParams.MATCH_PARENT)
+        isPreload =
+            savedInstanceState?.getBoolean(KEY_PRELOAD, false)
+                ?: arguments?.getBoolean(KEY_PRELOAD, false) ?: false
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
+        outState.putBoolean(KEY_PRELOAD, isPreload)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,6 +76,12 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         videoView.setOnCompletionListener(this)
         videoView.setOnErrorListener(this)
         play()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        Logger.d(TAG, "onHiddenChanged: $hidden $this")
+        if (!hidden) start() else pause()
     }
 
     override fun onPause() {
@@ -85,8 +101,9 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         repeatCount++
         if (repeatCount < repeatTimes) {
             play()
-            Logger.d(TAG, "repeat $repeatCount")
+            Logger.d(TAG, "repeat $repeatCount $this")
         } else {
+            Logger.d(TAG, "onCompletion $this")
             mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
         }
     }
@@ -97,9 +114,15 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
+        Logger.d(TAG, "onPrepared $this")
         videoPosition?.let { videoView?.seekTo(it) }
         mediaPlayer = mp
-        mediaCallback?.onPrepared()
+        if (!isPreload) {
+            mediaCallback?.onPrepared()
+        } else {
+            Logger.d(TAG, "onPrepared hide $this")
+            parentFragmentManager.beginTransaction().hide(this).commit()
+        }
     }
 
     override fun setVolume(volumePercent: Int) {
@@ -107,27 +130,44 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         mediaPlayer?.setVolume(value, value)
     }
 
+    fun playPreload() {
+        Logger.d(TAG, "disablePrepare $this")
+        isPreload = false
+        mediaPlayer?.let {
+            Logger.d(TAG, "disablePrepare mediaPlayer $this")
+            mediaCallback?.onPrepared()
+            it.start()
+        } ?: play()
+    }
+
     fun play() {
+        Logger.d(TAG, "play $this")
         uri.apply {
             videoView?.setVideoURI(this)
-            videoView?.start()
+            videoView?.seekTo(1)
+            if (!isPreload) videoView?.start()
         }
     }
 
     override fun start() {
-        videoView?.start()
+        Logger.d(TAG, "start $this")
+        if (!isPreload) videoView?.start()
     }
 
     override fun pause() {
+        Logger.d(TAG, "pause $this")
         videoView?.pause()
     }
 
     override fun stop() {
+        Logger.d(TAG, "stop $this")
         videoView?.stopPlayback()
     }
 
     override fun repeat() {
         super.repeat()
-        play()
+        Logger.d(TAG, "repeat $this")
+        videoView?.seekTo(1)
+        videoView?.start()
     }
 }
