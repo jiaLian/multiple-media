@@ -22,38 +22,63 @@ class ImageFragment : PlayTimeMediaFragment() {
     companion object {
         @JvmOverloads
         @JvmStatic
-        fun newInstance(uri: Uri, playtime: Int = Task.DEFAULT_PLAYTIME) = ImageFragment().apply {
-            arguments = bundle(uri, playtime)
+        fun newInstance(
+            uri: Uri,
+            playtime: Int = Task.DEFAULT_PLAYTIME,
+            showLoadingIcon: Boolean = true,
+            showFailureIcon: Boolean = true
+        ) = ImageFragment().apply {
+            arguments = bundle(uri, playtime, showLoadingIcon, showFailureIcon)
         }
 
         @JvmOverloads
         @JvmStatic
-        fun bundle(uri: Uri, playtime: Int = Task.DEFAULT_PLAYTIME) = Bundle().apply {
+        fun bundle(
+            uri: Uri,
+            playtime: Int = Task.DEFAULT_PLAYTIME,
+            showLoadingIcon: Boolean = true,
+            showFailureIcon: Boolean = true
+        ) = Bundle().apply {
             putParcelable(KEY_URI, uri)
             putInt(KEY_PLAY_TIME, playtime)
+            putBoolean(KEY_SHOW_LOADING_ICON, showLoadingIcon)
+            putBoolean(KEY_SHOW_FAILURE_ICON, showFailureIcon)
         }
     }
 
     private val draweeView: SimpleDraweeView by lazy {
-        val hierarchy = GenericDraweeHierarchyBuilder(resources)
-            .setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER)
-            .setProgressBarImageScaleType(ScalingUtils.ScaleType.CENTER_INSIDE)
-            .setFailureImageScaleType(ScalingUtils.ScaleType.CENTER_INSIDE)
-            .setProgressBarImage(R.drawable.ic_loading)
-            .setFailureImage(R.drawable.ic_failure)
-            .build()
-
+        val hierarchy = GenericDraweeHierarchyBuilder(resources).apply {
+            actualImageScaleType = ScalingUtils.ScaleType.FIT_CENTER
+            progressBarImageScaleType = ScalingUtils.ScaleType.CENTER_INSIDE
+            failureImageScaleType = ScalingUtils.ScaleType.CENTER_INSIDE
+            if (showLoadingIcon) setProgressBarImage(R.drawable.ic_loading)
+            if (showFailureIcon) setFailureImage(R.drawable.ic_failure)
+        }.build()
         SimpleDraweeView(context, hierarchy)
     }
-
+    private var showLoadingIcon = true
+    private var showFailureIcon = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        savedInstanceState?.let {
+            showLoadingIcon = it.getBoolean(KEY_SHOW_LOADING_ICON)
+            showFailureIcon = it.getBoolean(KEY_SHOW_FAILURE_ICON)
+        } ?: arguments?.let {
+            showLoadingIcon = it.getBoolean(KEY_SHOW_LOADING_ICON)
+            showFailureIcon = it.getBoolean(KEY_SHOW_FAILURE_ICON)
+        }
         if (!Fresco.hasBeenInitialized()) {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) Fresco.initialize(
                 context, ImagePipelineConfig.newBuilder(context).setDownsampleEnabled(true).build()
             )
             else Fresco.initialize(context)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_SHOW_FAILURE_ICON, showFailureIcon)
+        outState.putBoolean(KEY_SHOW_LOADING_ICON, showLoadingIcon)
     }
 
     override fun onCreateView(

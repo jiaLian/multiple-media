@@ -16,6 +16,8 @@ abstract class MediaFragment : Fragment, MediaController {
         const val KEY_REPEAT_TIMES = "repeat_times"
         const val KEY_PLAY_TIME = "play_time"
         const val KEY_URI = "uri"
+        const val KEY_SHOW_LOADING_ICON = "loading_icon"
+        const val KEY_SHOW_FAILURE_ICON = "failure_icon"
     }
 
     constructor() : super()

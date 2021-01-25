@@ -14,6 +14,8 @@ import com.goodjia.multiplemedia.fragment.component.ImageFragment
 import com.goodjia.multiplemedia.fragment.component.MediaFragment
 import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_PLAY_TIME
 import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_REPEAT_TIMES
+import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_SHOW_FAILURE_ICON
+import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_SHOW_LOADING_ICON
 import com.goodjia.multiplemedia.fragment.component.VideoFragment
 import com.goodjia.multiplemedia.fragment.component.VideoFragment.Companion.KEY_LAYOUT_CONTENT
 import com.goodjia.multiplemedia.fragment.component.YoutubeFragment
@@ -37,9 +39,20 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
             repeatTimes: Int? = null,
             playTime: Int? = null,
-            volumePercent: Int? = null, preload: Boolean = false
+            volumePercent: Int? = null, preload: Boolean = false,
+            showLoadingIcon: Boolean = true,
+            showFailureIcon: Boolean = true
         ) = MultimediaPlayerFragment().apply {
-            arguments = bundle(tasks, layoutContent, repeatTimes, playTime, volumePercent, preload)
+            arguments = bundle(
+                tasks,
+                layoutContent,
+                repeatTimes,
+                playTime,
+                volumePercent,
+                preload,
+                showLoadingIcon,
+                showFailureIcon
+            )
         }
 
         @JvmStatic
@@ -49,7 +62,9 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
             repeatTimes: Int? = null,
             playTime: Int? = null,
-            volumePercent: Int? = null, preload: Boolean = false
+            volumePercent: Int? = null, preload: Boolean = false,
+            showLoadingIcon: Boolean = true,
+            showFailureIcon: Boolean = true
         ) = Bundle().apply {
             tasks?.let { putParcelableArrayList(KEY_TASKS, ArrayList(it)) }
             putInt(KEY_LAYOUT_CONTENT, layoutContent)
@@ -57,6 +72,8 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             putInt(KEY_REPEAT_TIMES, repeatTimes ?: Int.MIN_VALUE)
             putInt(KEY_VOLUME, volumePercent ?: Int.MIN_VALUE)
             putBoolean(KEY_PRELOAD, preload)
+            putBoolean(KEY_SHOW_LOADING_ICON, showLoadingIcon)
+            putBoolean(KEY_SHOW_FAILURE_ICON, showFailureIcon)
         }
     }
 
@@ -73,6 +90,8 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
     private var playTime: Int = Int.MIN_VALUE
     private var volumePercent: Int = Int.MIN_VALUE
     protected var isPreload: Boolean = false
+    protected var showLoadingIcon: Boolean = true
+    protected var showFailureIcon: Boolean = true
     var playerListener: PlayerListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
         get() = if (isPreload) null else field
@@ -103,6 +122,8 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
             volumePercent = arguments?.getInt(KEY_VOLUME) ?: Int.MIN_VALUE
             isPreload = arguments?.getBoolean(KEY_PRELOAD, false) ?: false
+            showLoadingIcon = arguments?.getBoolean(KEY_SHOW_LOADING_ICON, true) ?: true
+            showFailureIcon = arguments?.getBoolean(KEY_SHOW_FAILURE_ICON, true) ?: true
         } else {
             tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
             layoutContent =
@@ -114,7 +135,9 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             resetPlayTime = savedInstanceState.getInt(KEY_PLAY_TIME)
             repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
             volumePercent = savedInstanceState.getInt(KEY_VOLUME)
-            isPreload = savedInstanceState.getBoolean(KEY_PRELOAD, false) ?: false
+            isPreload = savedInstanceState.getBoolean(KEY_PRELOAD, false)
+            showLoadingIcon = savedInstanceState.getBoolean(KEY_SHOW_LOADING_ICON, true)
+            showFailureIcon = savedInstanceState.getBoolean(KEY_SHOW_FAILURE_ICON, true)
         }
     }
 
@@ -126,6 +149,8 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
         outState.putInt(KEY_VOLUME, volumePercent)
         outState.putBoolean(KEY_PRELOAD, isPreload)
+        outState.putBoolean(KEY_SHOW_LOADING_ICON, showLoadingIcon)
+        outState.putBoolean(KEY_SHOW_FAILURE_ICON, showFailureIcon)
     }
 
     override fun onCreateView(
@@ -315,7 +340,12 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
                         )
 
                 Task.ACTION_IMAGE -> mediaFragment =
-                    ImageFragment.newInstance(playTask.getFileUri(), playTask.playtime)
+                    ImageFragment.newInstance(
+                        playTask.getFileUri(),
+                        playTask.playtime,
+                        showLoadingIcon = showLoadingIcon,
+                        showFailureIcon = showFailureIcon
+                    )
 
                 Task.ACTION_YOUTUBE -> mediaFragment =
                     YoutubeFragment.newInstance(
