@@ -93,7 +93,7 @@ class MenuFragment : Fragment(R.layout.fragment_menu) {
     private fun initTasks(vararg taskList: ArrayList<Task>) {
         taskList.forEach { arrayList ->
             arrayList.forEach { task ->
-                if (task.action == Task.ACTION_VIDEO) {
+                if (task.action == Task.ACTION_VIDEO || task.action == Task.ACTION_IMAGE) {
                     task.filePath =
                         requireContext().getExternalFilesDir(null)?.absolutePath + File.separatorChar +
                                 task.url?.substringAfterLast(

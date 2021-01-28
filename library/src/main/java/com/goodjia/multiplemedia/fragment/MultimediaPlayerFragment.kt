@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.imagepipeline.common.ResizeOptions
+import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.goodjia.multiplemedia.MediaController
 import com.goodjia.multiplemedia.R
 import com.goodjia.multiplemedia.Task
@@ -411,7 +414,28 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
             task ?: mediaIndex++
             onError(action, "open Media Fragment failed $playTask")
         } finally {
+            if (tasks.isNotEmpty() && isPreload) preFetchNextImage(tasks[if (mediaIndex > tasks.lastIndex) 0 else mediaIndex])
+        }
+    }
 
+    private fun preFetchNextImage(nextTask: Task) {
+        if (nextTask.action != Task.ACTION_IMAGE) return
+        view?.post {
+            val width = view?.width ?: 0
+            val height = view?.height ?: 0
+            if (view?.width == 0 || view?.height == 0) {
+                return@post
+            }
+            Fresco.getImagePipeline().run {
+                val request = ImageRequestBuilder.newBuilderWithSource(nextTask.getFileUri())
+                    .setResizeOptions(ResizeOptions(width, height))
+                    .build()
+                Logger.d(
+                    TAG,
+                    "prefetch, in cache ${isInBitmapMemoryCache(request)}, task $nextTask"
+                )
+                prefetchToBitmapCache(request, context)
+            }
         }
     }
 

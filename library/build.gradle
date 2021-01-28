@@ -4,8 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
-def verCode = 54
-def verName = "2.1.8"
+def verCode = 55
+def verName = "2.1.9"
 
 androidExtensions {
     experimental = true
