@@ -421,20 +421,27 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
     private fun preFetchNextImage(nextTask: Task) {
         if (nextTask.action != Task.ACTION_IMAGE) return
         view?.post {
-            val width = view?.width ?: 0
-            val height = view?.height ?: 0
-            if (view?.width == 0 || view?.height == 0) {
-                return@post
-            }
-            Fresco.getImagePipeline().run {
-                val request = ImageRequestBuilder.newBuilderWithSource(nextTask.getFileUri())
-                    .setResizeOptions(ResizeOptions(width, height))
-                    .build()
-                Logger.d(
+            try {
+                val width = view?.width ?: 0
+                val height = view?.height ?: 0
+                if (width == 0 || height == 0) {
+                    return@post
+                }
+                Fresco.getImagePipeline().run {
+                    val request = ImageRequestBuilder.newBuilderWithSource(nextTask.getFileUri())
+                        .setResizeOptions(ResizeOptions(width, height))
+                        .build()
+                    Logger.d(
+                        TAG,
+                        "prefetch, in cache ${isInBitmapMemoryCache(request)}, task $nextTask"
+                    )
+                    prefetchToBitmapCache(request, context)
+                }
+            } catch (e: Exception) {
+                Logger.e(
                     TAG,
-                    "prefetch, in cache ${isInBitmapMemoryCache(request)}, task $nextTask"
+                    "prefetch fail, task $nextTask"
                 )
-                prefetchToBitmapCache(request, context)
             }
         }
     }
