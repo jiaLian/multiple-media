@@ -87,8 +87,8 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         videoPosition = null
         repeatCount++
         if (repeatCount < repeatTimes) {
-            play()
-            Logger.d(TAG, "repeat $repeatCount $this")
+            Logger.d(TAG, "onCompletion repeat $repeatCount $this")
+            replay()
         } else {
             Logger.d(TAG, "onCompletion $this")
             mediaCallback?.onCompletion(Task.ACTION_VIDEO, uri?.toString() ?: "")
@@ -154,7 +154,11 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     override fun repeat() {
         super.repeat()
         Logger.d(TAG, "repeat $this")
+        replay()
+    }
+
+    private fun replay() {
         videoView?.seekTo(1)
-        videoView?.start()
+        videoView.postDelayed({videoView?.start()},100)
     }
 }

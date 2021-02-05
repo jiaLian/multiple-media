@@ -210,7 +210,6 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         checkLoopCompletion()
         if (tasks.size == 1) {
             when (mediaFragment) {
-                is VideoFragment -> (mediaFragment as VideoFragment).repeat()
                 is YoutubeFragment -> (mediaFragment as YoutubeFragment).reload()
                 else -> mediaFragment?.repeat()
             }
