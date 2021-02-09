@@ -51,10 +51,18 @@ data class Task @JvmOverloads constructor(
         if (obj !is Task) {
             return false
         }
-        return if (url != null) url == obj.url else className != null && className == obj.className && bundle == obj.bundle
+        return when {
+            filePath != null -> filePath == obj.filePath
+            url != null -> url == obj.url
+            else -> className != null && className == obj.className && bundle == obj.bundle
+        }
     }
 
     override fun hashCode(): Int {
-        return if (url != null) url.hashCode() else className.hashCode() + bundle.hashCode()
+        return when {
+            filePath != null -> filePath.hashCode()
+            url != null -> url.hashCode()
+            else -> className.hashCode() + bundle.hashCode()
+        }
     }
 }
