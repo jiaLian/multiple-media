@@ -1,6 +1,7 @@
 package com.goodjia.multiplemedia.fragment.component
 
 import android.graphics.Color
+import android.graphics.drawable.Animatable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -9,17 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.drawee.controller.BaseControllerListener
 import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
 import com.facebook.drawee.view.SimpleDraweeView
+import com.facebook.imagepipeline.common.ResizeOptions
 import com.facebook.imagepipeline.core.ImagePipelineConfig
+import com.facebook.imagepipeline.image.ImageInfo
+import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.goodjia.multiplemedia.R
 import com.goodjia.multiplemedia.Task
-import com.goodjia.multiplemedia.setResizeImage
+import com.goodjia.utility.Logger
 
 class ImageFragment : PlayTimeMediaFragment() {
 
     companion object {
+        val TAG = ImageFragment::class.simpleName
+
         @JvmOverloads
         @JvmStatic
         fun newInstance(
@@ -46,6 +53,7 @@ class ImageFragment : PlayTimeMediaFragment() {
         }
     }
 
+    private var isSet = false
     private val draweeView: SimpleDraweeView by lazy {
         val hierarchy = GenericDraweeHierarchyBuilder(resources).apply {
             actualImageScaleType = ScalingUtils.ScaleType.FIT_CENTER
@@ -91,10 +99,59 @@ class ImageFragment : PlayTimeMediaFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Logger.d(TAG, "onViewCreated: ")
         super.onViewCreated(view, savedInstanceState)
-        val params = draweeView.layoutParams as FrameLayout.LayoutParams
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT
-        params.height = ViewGroup.LayoutParams.MATCH_PARENT
-        draweeView.setResizeImage(uri)
+    }
+
+    override fun start() {
+        super.start()
+        Logger.d(TAG, "start: ")
+        if (!isSet) {
+            Logger.d(TAG, "assign image $uri")
+            (draweeView.layoutParams as FrameLayout.LayoutParams).apply {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+            draweeView.resize()
+        }
+    }
+
+    private fun SimpleDraweeView.resize() {
+        post {
+            if (width == 0 || height == 0) {
+                return@post
+            }
+            val request = ImageRequestBuilder.newBuilderWithSource(uri)
+                .setResizeOptions(ResizeOptions(width, height))
+                .build()
+            val controller = Fresco.newDraweeControllerBuilder()
+                .setControllerListener(object : BaseControllerListener<ImageInfo>() {
+                    override fun onFailure(id: String?, throwable: Throwable?) {
+                        val retry = getTag(R.id.retry) as Boolean?
+                        if (retry != true) {
+                            setTag(R.id.retry, true)
+                            setImageURI(uri, null)
+                        }
+                    }
+
+                    override fun onFinalImageSet(
+                        id: String?,
+                        imageInfo: ImageInfo?,
+                        animatable: Animatable?
+                    ) {
+                        Logger.d(TAG, "onFinalImageSet  $uri")
+                        isSet = true
+                    }
+
+                    override fun onRelease(id: String?) {
+                        Logger.d(TAG, "onRelease  $uri")
+                        isSet = false
+                    }
+                })
+                .setOldController(controller)
+                .setImageRequest(request)
+                .build()
+            setController(controller)
+        }
     }
 }

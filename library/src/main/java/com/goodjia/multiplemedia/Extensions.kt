@@ -48,7 +48,6 @@ private fun SimpleDraweeView.setController(uri: Uri?) {
             .setOldController(controller)
             .setImageRequest(request)
             .build()
-
         setController(controller)
     }
 }

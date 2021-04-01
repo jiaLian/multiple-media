@@ -11,8 +11,8 @@ android {
         applicationId "com.goodjia.multiplemedia.sample"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 7
-        versionName "2.0.0"
+        versionCode 8
+        versionName "2.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -34,14 +34,14 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.3.0-rc01'
+    implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.liulishuo.filedownloader:library:1.7.7'
-    implementation 'com.github.maning0303:MNProgressHUD:V1.0.5'
+    implementation 'com.github.maning0303:MNProgressHUD:V2.0.0X'
 //    implementation('com.goodjia:multiplemedia:2.0.0') {
 //        exclude group: 'com.goodjia', module: 'utility'
 //    }
@@ -49,6 +49,6 @@ dependencies {
         exclude group: 'com.goodjia', module: 'utility'
     }
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.goodjia:utility:1.3.11'
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
+    implementation 'com.goodjia:utility:1.3.12'
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
 }
