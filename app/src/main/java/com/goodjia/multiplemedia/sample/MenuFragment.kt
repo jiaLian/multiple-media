@@ -30,8 +30,10 @@ class MenuFragment : Fragment(R.layout.fragment_menu) {
         val TAG = MenuFragment::class.java.simpleName
     }
 
-    private val progressBarDialog: MProgressBarDialog by lazy {
-        MProgressBarDialog.Builder(activity).build()
+    private val progressDialog: MProgressBarDialog by lazy {
+        MProgressBarDialog.Builder(activity)
+            .setStyle(MProgressBarDialog.MProgressBarDialogStyle_Circle)
+            .build()
     }
 
     private var downloadTaskSet: MutableSet<Task> = HashSet()
@@ -194,21 +196,24 @@ class MenuFragment : Fragment(R.layout.fragment_menu) {
 
     private fun checkDownloadStatus() {
         if (downloadTaskSet.size == 0) {
-            progressBarDialog.dismiss()
+            progressDialog.dismiss()
         }
     }
 
     private fun setProgress() {
         if (downloadTaskSet.size == 0) return
         val finished = totalSource - downloadTaskSet.size
-        progressBarDialog.showProgress(
-            progress,
-            getString(R.string.message_download, finished, totalSource)
-        )
+        try {
+            progressDialog.showProgress(
+                progress,
+                getString(R.string.message_download, finished, totalSource)
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private val fileListener = object : FileDownloadLargeFileListener() {
-
         override fun pending(task: BaseDownloadTask, soFarBytes: Long, totalBytes: Long) {
             Logger.d(TAG, "fileListener pending: " + task.path)
             Logger.d(TAG, "fileListener pending: " + task.url)
@@ -225,15 +230,18 @@ class MenuFragment : Fragment(R.layout.fragment_menu) {
         }
 
         override fun completed(task: BaseDownloadTask) {
-            Logger.d(TAG, "fileListener completed: " + task.path)
-            downloadTaskSet.remove(Task(url = task.url))
+            downloadTaskSet.remove(Task(filePath = task.targetFilePath))
+            Logger.d(
+                TAG,
+                "fileListener completed: ${task.targetFilePath}, ${task.url}, ${downloadTaskSet.size}"
+            )
             setProgress()
             checkDownloadStatus()
         }
 
         override fun error(task: BaseDownloadTask, e: Throwable) {
-            Logger.d(TAG, "fileListener error: " + task.path)
-            downloadTaskSet.remove(Task(url = task.url))
+            Logger.d(TAG, "fileListener error: " + task.targetFilePath)
+            downloadTaskSet.remove(Task(filePath = task.targetFilePath))
             setProgress()
             checkDownloadStatus()
         }
