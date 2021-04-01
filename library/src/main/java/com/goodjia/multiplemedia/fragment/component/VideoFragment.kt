@@ -101,13 +101,13 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
-        Logger.d(TAG, "onPrepared $this")
+        Logger.d(TAG, "onPrepared $uri")
         videoPosition?.let { videoView?.seekTo(it) }
         mediaPlayer = mp
         if (!isPreload) {
             mediaCallback?.onPrepared()
         } else {
-            Logger.d(TAG, "onPrepared hide $this")
+            Logger.d(TAG, "onPrepared hide $uri")
             parentFragmentManager.beginTransaction().hide(this).commit()
         }
     }
@@ -128,7 +128,7 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     fun play() {
-        Logger.d(TAG, "play $this")
+        Logger.d(TAG, "play $uri")
         uri.apply {
             videoView?.setVideoURI(this)
             videoView?.seekTo(1)
@@ -137,28 +137,32 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     override fun start() {
-        Logger.d(TAG, "start $this")
-        if (!isPreload) videoView?.start()
+        Logger.d(TAG, "start $uri")
+        if (!isPreload) {
+            mediaPlayer?.let {
+                videoView?.start()
+            } ?: play()
+        }
     }
 
     override fun pause() {
-        Logger.d(TAG, "pause $this")
+        Logger.d(TAG, "pause $uri")
         videoView?.pause()
     }
 
     override fun stop() {
-        Logger.d(TAG, "stop $this")
+        Logger.d(TAG, "stop $uri")
         videoView?.stopPlayback()
     }
 
     override fun repeat() {
         super.repeat()
-        Logger.d(TAG, "repeat $this")
+        Logger.d(TAG, "repeat $uri")
         replay()
     }
 
     private fun replay() {
         videoView?.seekTo(1)
-        videoView.postDelayed({videoView?.start()},100)
+        videoView.postDelayed({ videoView?.start() }, 100)
     }
 }

@@ -111,7 +111,7 @@ class MenuFragment : Fragment(R.layout.fragment_menu) {
     private fun openPlayerFragment() {
         findNavController().navigate(
             R.id.action_menuFragment_to_myPlayerFragment,
-            MultimediaPlayerFragment.bundle(TASKS, repeatTimes = 2, preload = false)
+            MultimediaPlayerFragment.bundle(TASKS, repeatTimes = 2, preload = true)
         )
     }
 
