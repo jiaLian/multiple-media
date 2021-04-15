@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'maven-publish'
 
-def verCode = 59
-def verName = "2.1.13"
+def verCode = 60
+def verName = "2.1.14"
 
 androidExtensions {
     experimental = true
@@ -55,89 +55,70 @@ dependencies {
     api 'com.commonsware.cwac:presentation.x:0.6.1'
 }
 
-
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-def artifact_group = 'com.goodjia'
-def artifact_id = 'multiplemedia'
-def repoName = 'goodJia'
-def siteUrl = 'https://github.com/jiaLian/multiple-media' // Git仓库的url。
-def gitUrl = 'https://github.com/jiaLian/multiple-media.git' // Git仓库的url。
-def descr = "This is a multiple media library"
-def author = "jia.lian"
-def mail = "lianjiayou@gmail.com"
-
-group = artifact_group
-version = verName
-
-bintray {
-    user = properties.getProperty("bintray.user") // Bintray的用户名。
-    key = properties.getProperty("bintray.apikey") // Bintray刚才保存的ApiKey。
-    configurations = ['archives']
-    pkg {
-        repo = repoName
-        // 上传到maven库。（这里要特别注意，如果写了maven报404错误，请在bintray创建一个仓库，这里填改成你创建的仓库的名字，如何创建请看下图。）
-        name = artifact_id
-        // 发布到Bintray上的项目名字，这里的名字不是compile 'com.yanzhenjie:andserver:1.0.1'中的andserver。
-        desc = descr
-        userOrg = properties.getProperty("bintray.user") // Bintray的用户名，2016年11月更新。
-        vcsUrl = gitUrl
-        licenses = ["Apache-2.0"]
-        publish = true // 是否是公开项目。
-        version {
-            name = verName //Bintray logical version name
-        }
-    }
-}
-
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            name artifact_id
-            description descr
-            packaging 'aar'
-            groupId artifact_group
-            artifactId artifact_id
-            version verName
-
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+publishing {
+    publications {
+        aar(MavenPublication) {
+            groupId = 'com.goodjia'
+            artifactId = 'multiplemedia'
+            version = verName
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+            pom.withXml {
+                final dependenciesNode = asNode().appendNode('dependencies')
+                ext.addDependency = { Dependency dep, String scope ->
+                    if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified")
+                        return // ignore invalid dependencies
+                    final dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', dep.group)
+                    dependencyNode.appendNode('artifactId', dep.name)
+                    dependencyNode.appendNode('version', dep.version)
+                    dependencyNode.appendNode('scope', scope)
+                    if (!dep.transitive) {
+                        // If this dependency is transitive, we should force exclude all its dependencies them from the POM
+                        final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                        exclusionNode.appendNode('groupId', '*')
+                        exclusionNode.appendNode('artifactId', '*')
+                    } else if (!dep.properties.excludeRules.empty) {
+                        // Otherwise add specified exclude rules
+                        final exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                        dep.properties.excludeRules.each { ExcludeRule rule ->
+                            exclusionNode.appendNode('groupId', rule.group ?: '*')
+                            exclusionNode.appendNode('artifactId', rule.module ?: '*')
+                        }
+                    }
                 }
-            }
-            scm {
-                connection gitUrl
-                url siteUrl
-            }
-            developers {
-                developer {
-                    name author
-                    email mail
-                }
+                // List all "compile" dependencies (for old Gradle)
+                configurations.compile.getDependencies().each { dep -> addDependency(dep, "compile") }
+                // List all "api" dependencies (for new Gradle) as "compile" dependencies
+                configurations.api.getDependencies().each { dep -> addDependency(dep, "compile") }
+                // List all "implementation" dependencies (for new Gradle) as "runtime" dependencies
+                configurations.implementation.getDependencies().each { dep -> addDependency(dep, "runtime") }
             }
         }
     }
 }
 
-task sourcesJar(type: Jar) {
-    archiveClassifier.set("sources")
-    from android.sourceSets.main.java.srcDirs
+artifactoryPublish {
+    publications(publishing.publications.aar)
 }
+artifactoryPublish.dependsOn('assembleRelease')
+artifactory {
+    contextUrl = 'https://goodjia.jfrog.io/artifactory'
+    publish {
+        repository {
+            repoKey = 'goodjia' // The Artifactory repository key to publish to
+            username = properties.getProperty('jforg.user') // The publisher user name
+            password = properties.getProperty('jforg.pwdkey') // The publisher password
 
-//task javadoc(type: Javadoc) {
-//    failOnError false
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//}
-//
-//task javadocJar(type: Jar, dependsOn: javadoc) {
-//    archiveClassifier.set("javadoc")
-//    from javadoc.destinationDir
-//}
-
-artifacts {
-//    archives javadocJar
-    archives sourcesJar
+        }
+        defaults {
+            publications('aar')
+            publishArtifacts = true
+            // Properties to be attached to the published artifacts.
+            properties = ['qa.level': 'basic', 'dev.team': 'core']
+            publishPom = true // Publish generated POM files to Artifactory (true by default)
+        }
+    }
 }
