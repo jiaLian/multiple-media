@@ -136,6 +136,15 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
         }
     }
 
+    private val checkPlayingRunnable by lazy {
+        Runnable {
+            Logger.d(TAG, "check playing")
+            if (mediaPlayer?.isPlaying == false) {
+                play()
+            }
+        }
+    }
+
     override fun start() {
         Logger.d(TAG, "start $uri")
         if (!isPreload) {
@@ -143,10 +152,17 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
                 videoView?.start()
             } ?: play()
         }
+        checkPlaying()
+    }
+
+    private fun checkPlaying() {
+        videoView.removeCallbacks(checkPlayingRunnable)
+        videoView.postDelayed(checkPlayingRunnable, 10_000)
     }
 
     override fun pause() {
         Logger.d(TAG, "pause $uri")
+        videoView.removeCallbacks(checkPlayingRunnable)
         videoView?.pause()
     }
 
@@ -162,6 +178,7 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     private fun replay() {
+        checkPlaying()
         videoView?.seekTo(1)
         videoView.postDelayed({ videoView?.start() }, 100)
     }
