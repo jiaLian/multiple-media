@@ -4,8 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
 
-def verCode = 60
-def verName = "2.1.14"
+def verCode = 61
+def verName = "2.1.15"
 
 androidExtensions {
     experimental = true

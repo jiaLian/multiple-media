@@ -9,6 +9,7 @@ import com.goodjia.multiplemedia.R
 import com.goodjia.multiplemedia.Task
 import com.goodjia.utility.Logger
 import kotlinx.android.synthetic.main.fragment_video.*
+import java.lang.IllegalStateException
 
 
 open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.OnCompletionListener,
@@ -138,9 +139,13 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
 
     private val checkPlayingRunnable by lazy {
         Runnable {
-            Logger.d(TAG, "check playing")
-            if (mediaPlayer?.isPlaying == false) {
-                play()
+            try {
+                Logger.d(TAG, "check playing $isDetached")
+                if (!isDetached && mediaPlayer?.isPlaying == false) {
+                    play()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
