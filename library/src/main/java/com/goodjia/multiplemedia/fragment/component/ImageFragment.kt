@@ -54,16 +54,7 @@ class ImageFragment : PlayTimeMediaFragment() {
     }
 
     private var isSet = false
-    private val draweeView: SimpleDraweeView by lazy {
-        val hierarchy = GenericDraweeHierarchyBuilder(resources).apply {
-            actualImageScaleType = ScalingUtils.ScaleType.FIT_CENTER
-            progressBarImageScaleType = ScalingUtils.ScaleType.CENTER_INSIDE
-            failureImageScaleType = ScalingUtils.ScaleType.CENTER_INSIDE
-            if (showLoadingIcon) setProgressBarImage(R.drawable.ic_loading)
-            if (showFailureIcon) setFailureImage(R.drawable.ic_failure)
-        }.build()
-        SimpleDraweeView(context, hierarchy)
-    }
+    private var draweeView: SimpleDraweeView? = null
     private var showLoadingIcon = true
     private var showFailureIcon = true
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,7 +85,16 @@ class ImageFragment : PlayTimeMediaFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        draweeView.setBackgroundColor(Color.TRANSPARENT)
+        val hierarchy = GenericDraweeHierarchyBuilder(resources).apply {
+            actualImageScaleType = ScalingUtils.ScaleType.FIT_CENTER
+            progressBarImageScaleType = ScalingUtils.ScaleType.CENTER_INSIDE
+            failureImageScaleType = ScalingUtils.ScaleType.CENTER_INSIDE
+            if (showLoadingIcon) setProgressBarImage(R.drawable.ic_loading)
+            if (showFailureIcon) setFailureImage(R.drawable.ic_failure)
+        }.build()
+        draweeView = SimpleDraweeView(context, hierarchy).apply {
+            setBackgroundColor(Color.TRANSPARENT)
+        }
         return draweeView
     }
 
@@ -108,11 +108,11 @@ class ImageFragment : PlayTimeMediaFragment() {
         Logger.d(TAG, "start: ")
         if (!isSet) {
             Logger.d(TAG, "assign image $uri")
-            (draweeView.layoutParams as FrameLayout.LayoutParams).apply {
+            (draweeView?.layoutParams as? FrameLayout.LayoutParams)?.apply {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
                 height = ViewGroup.LayoutParams.MATCH_PARENT
             }
-            draweeView.resize()
+            draweeView?.resize()
         }
     }
 
