@@ -4,8 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
 
-def verCode = 62
-def verName = "2.1.16"
+def verCode = 63
+def verName = "2.2.0"
 
 androidExtensions {
     experimental = true
@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     api 'com.labo.kaji:fragmentanimations:0.1.1'
-    implementation 'com.goodjia:utility:1.3.12'
+    implementation 'com.goodjia:utility:1.3.13'
     api 'com.commonsware.cwac:presentation.x:0.6.1'
 }
 

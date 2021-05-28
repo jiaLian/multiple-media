@@ -39,7 +39,7 @@ val TASKS = arrayListOf(
     Task(
         Task.ACTION_CUSTOM, playtime = 3,
         className = CustomTaskFragment::class.java.name,
-        bundle = CustomTaskFragment.bundle("Custom 1")
+        name = "Custom 1"
     ),
     Task(
         Task.ACTION_IMAGE,
@@ -59,7 +59,7 @@ val TASKS = arrayListOf(
         Task.ACTION_CUSTOM, playtime = 5,
 //                    Error custom class sample
         className = MenuFragment::class.java.name,
-        bundle = CustomTaskFragment.bundle("Custom Error")
+        name = "Custom Error"
     )
 )
 val PRESENTATION_TASKS = arrayListOf(
@@ -71,7 +71,7 @@ val PRESENTATION_TASKS = arrayListOf(
     Task(
         Task.ACTION_CUSTOM, playtime = 10,
         className = CustomTaskFragment::class.java.name,
-        bundle = CustomTaskFragment.bundle("Presentation")
+        name = "Presentation"
     ),
     Task(Task.ACTION_VIDEO, "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
 )

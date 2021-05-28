@@ -21,20 +21,28 @@ open class YoutubeFragment : MediaFragment() {
         @JvmOverloads
         fun newInstance(
             url: String?, showUI: Boolean = true,
-            repeatTimes: Int = 1
+            repeatTimes: Int = 1,
+            id: Long? = null,
+            name: String? = null
         ) = YoutubeFragment().apply {
-            arguments = bundle(url, showUI, repeatTimes)
+            arguments = bundle(url, showUI, repeatTimes, id, name)
         }
 
         @JvmStatic
         @JvmOverloads
         fun bundle(
             url: String?, showUI: Boolean = true,
-            repeatTimes: Int = 1
+            repeatTimes: Int = 1,
+            id: Long? = null,
+            name: String? = null
         ) = Bundle().apply {
             putString(KEY_URI, url)
             putBoolean(KEY_UI, showUI)
             putInt(KEY_REPEAT_TIMES, repeatTimes)
+            id?.let {
+                putLong(KEY_ID, it)
+            }
+            putString(KEY_NAME, name)
         }
     }
 

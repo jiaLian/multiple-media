@@ -20,7 +20,9 @@ data class Task @JvmOverloads constructor(
     val className: String? = null,
     val bundle: Bundle? = null,
     val errorSet: LinkedHashSet<Long> = linkedSetOf(),
-    var preload: Boolean = false
+    var preload: Boolean = false,
+    val id: Long? = null,
+    val name: String? = null
 ) : Parcelable, Serializable {
 
     companion object {

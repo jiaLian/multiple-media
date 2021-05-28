@@ -18,7 +18,6 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
         maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
-        maven { url "https://dl.bintray.com/jialian/goodJia" }
         maven { url "https://goodjia.jfrog.io/artifactory/goodjia" }
     }
 }

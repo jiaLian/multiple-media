@@ -10,6 +10,16 @@ class MyNavHostFragment : NavHostFragment(), MediaFragment.MediaCallback {
         val TAG = MyNavHostFragment::class.simpleName
     }
 
+    override fun onPlayLog(
+        id: Long?,
+        name: String?,
+        className: String?,
+        startTime: Long,
+        endTime: Long,
+        pauseTime: Int
+    ) {
+    }
+
     override fun onCompletion(action: Int, message: String?) {
         Logger.d(TAG, "onCompletion: ")
         if (findNavController().currentDestination?.id == R.id.youtubeFragment) {

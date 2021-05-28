@@ -9,7 +9,6 @@ import com.goodjia.multiplemedia.R
 import com.goodjia.multiplemedia.Task
 import com.goodjia.utility.Logger
 import kotlinx.android.synthetic.main.fragment_video.*
-import java.lang.IllegalStateException
 
 
 open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.OnCompletionListener,
@@ -25,9 +24,11 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
             uri: Uri,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
             repeatTimes: Int = 1,
-            preload: Boolean = false
+            preload: Boolean = false,
+            id: Long? = null,
+            name: String? = null
         ) = VideoFragment().apply {
-            arguments = bundle(uri, layoutContent, repeatTimes, preload)
+            arguments = bundle(uri, layoutContent, repeatTimes, preload, id, name)
         }
 
         @JvmStatic
@@ -36,12 +37,18 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
             uri: Uri,
             layoutContent: Int = ViewGroup.LayoutParams.MATCH_PARENT,
             repeatTimes: Int = 1,
-            preload: Boolean = false
+            preload: Boolean = false,
+            id: Long? = null,
+            name: String? = null
         ) = Bundle().apply {
             putParcelable(KEY_URI, uri)
             putInt(KEY_LAYOUT_CONTENT, layoutContent)
             putInt(KEY_REPEAT_TIMES, repeatTimes)
             putBoolean(KEY_PRELOAD, preload)
+            id?.let {
+                putLong(KEY_ID, it)
+            }
+            putString(KEY_NAME, name)
         }
     }
 
@@ -63,18 +70,18 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val layoutParams = videoView.layoutParams
-        layoutParams.width = layoutContent
-        layoutParams.height = layoutContent
-        videoView.setOnPreparedListener(this)
-        videoView.setOnCompletionListener(this)
-        videoView.setOnErrorListener(this)
+        val layoutParams = videoView?.layoutParams
+        layoutParams?.width = layoutContent
+        layoutParams?.height = layoutContent
+        videoView?.setOnPreparedListener(this)
+        videoView?.setOnCompletionListener(this)
+        videoView?.setOnErrorListener(this)
         play()
     }
 
     override fun onPause() {
         super.onPause()
-        if (videoView.isPlaying) {
+        if (videoView?.isPlaying == true) {
             videoPosition = mediaPlayer?.currentPosition
         }
     }
@@ -161,13 +168,13 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     private fun checkPlaying() {
-        videoView.removeCallbacks(checkPlayingRunnable)
-        videoView.postDelayed(checkPlayingRunnable, 10_000)
+        videoView?.removeCallbacks(checkPlayingRunnable)
+        videoView?.postDelayed(checkPlayingRunnable, 10_000)
     }
 
     override fun pause() {
         Logger.d(TAG, "pause $uri")
-        videoView.removeCallbacks(checkPlayingRunnable)
+        videoView?.removeCallbacks(checkPlayingRunnable)
         videoView?.pause()
     }
 
@@ -185,6 +192,6 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     private fun replay() {
         checkPlaying()
         videoView?.seekTo(1)
-        videoView.postDelayed({ videoView?.start() }, 100)
+        videoView?.postDelayed({ videoView?.start() }, 100)
     }
 }

@@ -6,11 +6,15 @@ import com.goodjia.multiplemedia.Task
 import com.goodjia.multiplemedia.fragment.MultimediaPlayerFragment
 import com.goodjia.multiplemedia.fragment.component.MediaFragment
 import com.goodjia.utility.Logger
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 class MyPlayerFragment : MultimediaPlayerFragment() {
     companion object {
         val TAG = MyPlayerFragment::class.simpleName
+        val DATA_FORMAT = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
     }
 
     init {
@@ -72,6 +76,27 @@ class MyPlayerFragment : MultimediaPlayerFragment() {
                     Logger.d(TAG, "onError $position, task $task, error $message")
                 }
             }
+        playLogListener = object : PlayLogListener {
+            override fun onPlayLog(
+                id: Long?,
+                name: String?,
+                className: String?,
+                startTime: Long,
+                endTime: Long,
+                pauseTime: Int
+            ) {
+                Logger.d(
+                    TAG,
+                    "onPlayLog: id $id, name $name, class $className, startTime ${
+                        DATA_FORMAT.format(
+                            Date(startTime)
+                        )
+                    }, endTime ${
+                        DATA_FORMAT.format(Date(endTime))
+                    }"
+                )
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

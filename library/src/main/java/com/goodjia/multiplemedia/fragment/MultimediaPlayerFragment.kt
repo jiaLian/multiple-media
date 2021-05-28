@@ -15,6 +15,8 @@ import com.goodjia.multiplemedia.R
 import com.goodjia.multiplemedia.Task
 import com.goodjia.multiplemedia.fragment.component.ImageFragment
 import com.goodjia.multiplemedia.fragment.component.MediaFragment
+import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_ID
+import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_NAME
 import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_PLAY_TIME
 import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_REPEAT_TIMES
 import com.goodjia.multiplemedia.fragment.component.MediaFragment.Companion.KEY_SHOW_FAILURE_ICON
@@ -96,6 +98,7 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
     protected var showLoadingIcon: Boolean = true
     protected var showFailureIcon: Boolean = true
     var playerListener: PlayerListener? = null
+    var playLogListener: PlayLogListener? = null
     var animationCallback: MediaFragment.AnimationCallback? = null
         get() = if (isPreload) null else field
     var isFinished = false
@@ -174,11 +177,9 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         super.onHiddenChanged(hidden)
         Logger.d(TAG, "onHiddenChanged: ")
         if (hidden) {
-            mediaFragment?.pause()
-            removePlaytime()
+            pause()
         } else {
-            mediaFragment?.start()
-            postPlaytime()
+            start()
         }
     }
 
@@ -216,6 +217,17 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         } else {
             startTask()
         }
+    }
+
+    override fun onPlayLog(
+        id: Long?,
+        name: String?,
+        className: String?,
+        startTime: Long,
+        endTime: Long,
+        pauseTime: Int
+    ) {
+        playLogListener?.onPlayLog(id, name, className, startTime, endTime, pauseTime)
     }
 
     override fun onError(action: Int, message: String?) {
@@ -338,7 +350,9 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
                         if (isPreload && playTask == preloadFragment?.preloadTask) preloadFragment else VideoFragment.newInstance(
                             playTask.getFileUri(),
                             layoutContent,
-                            repeatTimes = playTask.repeatTimes
+                            repeatTimes = playTask.repeatTimes,
+                            id = playTask.id,
+                            name = playTask.name
                         )
 
                 Task.ACTION_IMAGE -> mediaFragment =
@@ -346,14 +360,18 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
                         playTask.getFileUri(),
                         playTask.playtime,
                         showLoadingIcon = showLoadingIcon,
-                        showFailureIcon = showFailureIcon
+                        showFailureIcon = showFailureIcon,
+                        id = playTask.id,
+                        name = playTask.name
                     )
 
                 Task.ACTION_YOUTUBE -> mediaFragment =
                     YoutubeFragment.newInstance(
                         playTask.url,
                         false,
-                        repeatTimes = playTask.repeatTimes
+                        repeatTimes = playTask.repeatTimes,
+                        id = playTask.id,
+                        name = playTask.name
                     )
 
                 Task.ACTION_CUSTOM -> {
@@ -362,7 +380,13 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
                         playTask.className ?: return
                         val clz = Class.forName(playTask.className)
                         val bundle = playTask.bundle ?: Bundle()
-                        bundle.putInt(MediaFragment.KEY_PLAY_TIME, playTask.playtime)
+                        bundle.run {
+                            putInt(KEY_PLAY_TIME, playTask.playtime)
+                            playTask.id?.let {
+                                putLong(KEY_ID, it)
+                            }
+                            putString(KEY_NAME, playTask.name)
+                        }
                         mediaFragment = clz.newInstance() as MediaFragment?
                         mediaFragment?.arguments = bundle
                     }
@@ -470,14 +494,22 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
                                     it.getFileUri(),
                                     layoutContent,
                                     repeatTimes = it.repeatTimes,
-                                    preload = true
+                                    preload = true,
+                                    id = it.id,
+                                    name = it.name
                                 )
                             Task.ACTION_CUSTOM -> {
                                 if (it.preload) {
                                     val clz = Class.forName(it.className)
                                     val bundle = it.bundle ?: Bundle()
-                                    bundle.putInt(MediaFragment.KEY_PLAY_TIME, it.playtime)
-                                    bundle.putBoolean(KEY_PRELOAD, true)
+                                    bundle.run {
+                                        putInt(KEY_PLAY_TIME, it.playtime)
+                                        putBoolean(KEY_PRELOAD, true)
+                                        it.id?.let { id ->
+                                            putLong(KEY_ID, id)
+                                        }
+                                        putString(KEY_NAME, it.name)
+                                    }
                                     (clz.newInstance() as MediaFragment?)?.apply {
                                         arguments = bundle
                                     }
@@ -536,5 +568,16 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         fun onLoopCompletion(player: MultimediaPlayerFragment, repeatCount: Int)
 
         fun onFinished(player: MultimediaPlayerFragment)
+    }
+
+    interface PlayLogListener {
+        fun onPlayLog(
+            id: Long?,
+            name: String?,
+            className: String?,
+            startTime: Long,
+            endTime: Long,
+            pauseTime: Int
+        )
     }
 }

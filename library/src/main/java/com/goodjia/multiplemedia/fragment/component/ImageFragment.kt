@@ -33,9 +33,11 @@ class ImageFragment : PlayTimeMediaFragment() {
             uri: Uri,
             playtime: Int = Task.DEFAULT_PLAYTIME,
             showLoadingIcon: Boolean = true,
-            showFailureIcon: Boolean = true
+            showFailureIcon: Boolean = true,
+            id: Long? = null,
+            name: String? = null
         ) = ImageFragment().apply {
-            arguments = bundle(uri, playtime, showLoadingIcon, showFailureIcon)
+            arguments = bundle(uri, playtime, showLoadingIcon, showFailureIcon, id, name)
         }
 
         @JvmOverloads
@@ -44,12 +46,18 @@ class ImageFragment : PlayTimeMediaFragment() {
             uri: Uri,
             playtime: Int = Task.DEFAULT_PLAYTIME,
             showLoadingIcon: Boolean = true,
-            showFailureIcon: Boolean = true
+            showFailureIcon: Boolean = true,
+            id: Long? = null,
+            name: String? = null
         ) = Bundle().apply {
             putParcelable(KEY_URI, uri)
             putInt(KEY_PLAY_TIME, playtime)
             putBoolean(KEY_SHOW_LOADING_ICON, showLoadingIcon)
             putBoolean(KEY_SHOW_FAILURE_ICON, showFailureIcon)
+            id?.let {
+                putLong(KEY_ID, it)
+            }
+            putString(KEY_NAME, name)
         }
     }
 
