@@ -93,7 +93,7 @@ class MyPlayerFragment : MultimediaPlayerFragment() {
                         )
                     }, endTime ${
                         DATA_FORMAT.format(Date(endTime))
-                    }"
+                    }, pause time $pauseTime"
                 )
             }
         }

@@ -29,6 +29,7 @@ abstract class PlayTimeMediaFragment : MediaFragment {
     }
 
     override fun start() {
+        super.start()
         startTime = System.currentTimeMillis()
         view?.removeCallbacks(completionRunnable)
         view?.postDelayed(completionRunnable, playTime * 1000L)
@@ -40,6 +41,7 @@ abstract class PlayTimeMediaFragment : MediaFragment {
     }
 
     override fun stop() {
+        super.stop()
         val processTime = (System.currentTimeMillis() - startTime) / 1000
         playTime = if (processTime < playTime) playTime - processTime.toInt() else 0
         view?.removeCallbacks(completionRunnable)

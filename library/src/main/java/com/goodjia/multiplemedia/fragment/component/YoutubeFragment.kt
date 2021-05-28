@@ -16,6 +16,7 @@ open class YoutubeFragment : MediaFragment() {
     companion object {
         val TAG = YoutubeFragment::class.java.simpleName
         const val KEY_UI = "showUI"
+        private const val KEY_URL = "url"
 
         @JvmStatic
         @JvmOverloads
@@ -36,7 +37,7 @@ open class YoutubeFragment : MediaFragment() {
             id: Long? = null,
             name: String? = null
         ) = Bundle().apply {
-            putString(KEY_URI, url)
+            putString(KEY_URL, url)
             putBoolean(KEY_UI, showUI)
             putInt(KEY_REPEAT_TIMES, repeatTimes)
             id?.let {
@@ -103,17 +104,17 @@ open class YoutubeFragment : MediaFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            url = arguments?.getString(KEY_URI)
+            url = arguments?.getString(KEY_URL)
             showUI = arguments?.getBoolean(KEY_UI) ?: false
         } else {
-            url = savedInstanceState.getString(KEY_URI)
+            url = savedInstanceState.getString(KEY_URL)
             showUI = savedInstanceState.getBoolean(KEY_UI)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(KEY_URI, url)
+        outState.putString(KEY_URL, url)
     }
 
     override fun onCreateView(
@@ -169,10 +170,12 @@ open class YoutubeFragment : MediaFragment() {
     }
 
     override fun start() {
+        super.start()
         youTubePlayer?.play()
     }
 
     override fun pause() {
+        super.pause()
         youTubePlayer?.pause()
     }
 

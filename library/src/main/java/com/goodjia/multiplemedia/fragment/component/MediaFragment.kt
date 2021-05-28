@@ -2,6 +2,7 @@ package com.goodjia.multiplemedia.fragment.component
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.Animation
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
@@ -64,6 +65,8 @@ abstract class MediaFragment : Fragment, MediaController {
     protected var repeatTimes: Int = 1
     protected var repeatCount: Int = 0
     protected var startLogTime: Long = 0
+    protected var pauseLogTime: Long? = null
+    protected var totalPauseTime: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
@@ -115,25 +118,46 @@ abstract class MediaFragment : Fragment, MediaController {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mediaCallback?.onPlayLog(
-            id,
-            name,
-            this::class.simpleName,
-            startLogTime,
-            System.currentTimeMillis()
-        )
+        onPlayLog()
+    }
+
+    override fun start() {
+        Logger.d(TAG, "start: $this")
+        pauseLogTime?.let {
+            val pauseTime = (System.currentTimeMillis() - it) / 1000
+            if (pauseTime >= 1/*ignore less than 1 second*/) {
+                totalPauseTime += pauseTime.toInt()
+                Log.d(TAG, "total pause time: $totalPauseTime")
+            }
+        }
+    }
+
+    override fun pause() {
+        Logger.d(TAG, "pause: $this")
+        pauseLogTime = System.currentTimeMillis()
+    }
+
+    override fun stop() {
+        Logger.d(TAG, "stop: $this")
+        pauseLogTime = System.currentTimeMillis()
     }
 
     override fun repeat() {
         repeatCount = 0
         playTime = resetPlayTime
+        onPlayLog()
+    }
+
+    private fun onPlayLog() {
         mediaCallback?.onPlayLog(
             id,
             name,
             this::class.simpleName,
             startLogTime,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            totalPauseTime
         )
+        totalPauseTime = 0
         startLogTime = System.currentTimeMillis()
     }
 

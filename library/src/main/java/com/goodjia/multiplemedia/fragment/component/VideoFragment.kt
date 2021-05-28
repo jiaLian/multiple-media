@@ -128,6 +128,7 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     override fun playPreload() {
         super.playPreload()
         Logger.d(TAG, "disablePrepare $this")
+        pauseLogTime = null
         mediaPlayer?.let {
             Logger.d(TAG, "disablePrepare mediaPlayer $this")
             mediaCallback?.onPrepared()
@@ -158,6 +159,7 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     override fun start() {
+        super.start()
         Logger.d(TAG, "start $uri")
         if (!isPreload) {
             mediaPlayer?.let {
@@ -173,12 +175,14 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     }
 
     override fun pause() {
+        super.pause()
         Logger.d(TAG, "pause $uri")
         videoView?.removeCallbacks(checkPlayingRunnable)
         videoView?.pause()
     }
 
     override fun stop() {
+        super.stop()
         Logger.d(TAG, "stop $uri")
         videoView?.stopPlayback()
     }
