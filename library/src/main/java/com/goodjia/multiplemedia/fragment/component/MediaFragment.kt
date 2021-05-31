@@ -121,13 +121,15 @@ abstract class MediaFragment : Fragment, MediaController {
         onPlayLog()
     }
 
+    private var savePauseTime: Long = 0
     override fun start() {
         Logger.d(TAG, "start: $this")
         pauseLogTime?.let {
             val pauseTime = (System.currentTimeMillis() - it) / 1000
-            if (pauseTime >= 1/*ignore less than 1 second*/) {
+            if (System.currentTimeMillis() - savePauseTime > 1000 && pauseTime >= 1/*ignore less than 1 second*/) {
                 totalPauseTime += pauseTime.toInt()
-                Log.d(TAG, "total pause time: $totalPauseTime")
+                Logger.d(TAG, "total pause time: $totalPauseTime")
+                savePauseTime = System.currentTimeMillis()
             }
         }
     }
