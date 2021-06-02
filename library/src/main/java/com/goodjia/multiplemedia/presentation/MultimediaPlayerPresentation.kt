@@ -51,26 +51,13 @@ class MultimediaPlayerPresentation : PresentationFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            tasks = arguments?.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
-            layoutContent = arguments?.getInt(
+        arguments?.run {
+            tasks = getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
+            layoutContent = getInt(
                 KEY_LAYOUT_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
-            ) ?: ViewGroup.LayoutParams.MATCH_PARENT
-        } else {
-            tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
-            layoutContent =
-                savedInstanceState.getInt(
-                    KEY_LAYOUT_CONTENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
+            )
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(KEY_TASKS, tasks)
-        outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
     }
 
     override fun onCreateView(

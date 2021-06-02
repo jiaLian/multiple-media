@@ -57,15 +57,8 @@ open class VideoFragment : MediaFragment(R.layout.fragment_video), MediaPlayer.O
     private var videoPosition: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        layoutContent =
-            savedInstanceState?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                ?: (arguments?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                    ?: ViewGroup.LayoutParams.MATCH_PARENT)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
+        layoutContent = arguments?.getInt(KEY_LAYOUT_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            ?: ViewGroup.LayoutParams.MATCH_PARENT
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

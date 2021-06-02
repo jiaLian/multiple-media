@@ -103,18 +103,10 @@ open class YoutubeFragment : MediaFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            url = arguments?.getString(KEY_URL)
-            showUI = arguments?.getBoolean(KEY_UI) ?: false
-        } else {
-            url = savedInstanceState.getString(KEY_URL)
-            showUI = savedInstanceState.getBoolean(KEY_UI)
+        arguments?.run {
+            url = getString(KEY_URL)
+            showUI = getBoolean(KEY_UI)
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(KEY_URL, url)
     }
 
     override fun onCreateView(

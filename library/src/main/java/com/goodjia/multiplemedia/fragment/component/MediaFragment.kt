@@ -2,7 +2,6 @@ package com.goodjia.multiplemedia.fragment.component
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.animation.Animation
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
@@ -69,36 +68,16 @@ abstract class MediaFragment : Fragment, MediaController {
     protected var totalPauseTime: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            id = arguments?.getLong(KEY_ID)
-            name = arguments?.getString(KEY_NAME)
-            playTime = arguments?.getInt(KEY_PLAY_TIME) ?: Task.DEFAULT_PLAYTIME
-            resetPlayTime = arguments?.getInt(KEY_PLAY_TIME) ?: Task.DEFAULT_PLAYTIME
-            repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
-            uri = arguments?.getParcelable(KEY_URI)
-            isPreload = arguments?.getBoolean(KEY_PRELOAD, false) ?: false
-        } else {
-            id = savedInstanceState.getLong(KEY_ID)
-            name = savedInstanceState.getString(KEY_NAME)
-            playTime = savedInstanceState.getInt(KEY_PLAY_TIME, Task.DEFAULT_PLAYTIME)
-            resetPlayTime = savedInstanceState.getInt(KEY_PLAY_TIME, Task.DEFAULT_PLAYTIME)
-            repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
-            uri = savedInstanceState.getParcelable(KEY_URI)
-            isPreload = savedInstanceState.getBoolean(KEY_PRELOAD, false)
+        arguments?.run {
+            id = getLong(KEY_ID)
+            name = getString(KEY_NAME)
+            playTime = getInt(KEY_PLAY_TIME)
+            resetPlayTime = getInt(KEY_PLAY_TIME)
+            repeatTimes = getInt(KEY_REPEAT_TIMES)
+            uri = getParcelable(KEY_URI)
+            isPreload = getBoolean(KEY_PRELOAD, false)
         }
         startLogTime = System.currentTimeMillis()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        id?.let {
-            outState.putLong(KEY_ID, it)
-        }
-        outState.putString(KEY_NAME, name)
-        outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
-        outState.putInt(KEY_PLAY_TIME, playTime)
-        outState.putParcelable(KEY_URI, uri)
-        outState.putBoolean(KEY_PRELOAD, isPreload)
     }
 
     override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {

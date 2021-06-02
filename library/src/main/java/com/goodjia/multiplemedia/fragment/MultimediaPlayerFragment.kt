@@ -117,46 +117,20 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Logger.d(TAG, "onCreate: ")
-        if (savedInstanceState == null) {
-            tasks = arguments?.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
-            layoutContent = arguments?.getInt(
-                KEY_LAYOUT_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            ) ?: ViewGroup.LayoutParams.MATCH_PARENT
-            playTime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
-            resetPlayTime = arguments?.getInt(KEY_PLAY_TIME) ?: Int.MIN_VALUE
-            repeatTimes = arguments?.getInt(KEY_REPEAT_TIMES) ?: Int.MIN_VALUE
-            volumePercent = arguments?.getInt(KEY_VOLUME) ?: Int.MIN_VALUE
-            isPreload = arguments?.getBoolean(KEY_PRELOAD, false) ?: false
-            showLoadingIcon = arguments?.getBoolean(KEY_SHOW_LOADING_ICON, true) ?: true
-            showFailureIcon = arguments?.getBoolean(KEY_SHOW_FAILURE_ICON, true) ?: true
-        } else {
-            tasks = savedInstanceState.getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
-            layoutContent =
-                savedInstanceState.getInt(
-                    KEY_LAYOUT_CONTENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            playTime = savedInstanceState.getInt(KEY_PLAY_TIME)
-            resetPlayTime = savedInstanceState.getInt(KEY_PLAY_TIME)
-            repeatTimes = savedInstanceState.getInt(KEY_REPEAT_TIMES)
-            volumePercent = savedInstanceState.getInt(KEY_VOLUME)
-            isPreload = savedInstanceState.getBoolean(KEY_PRELOAD, false)
-            showLoadingIcon = savedInstanceState.getBoolean(KEY_SHOW_LOADING_ICON, true)
-            showFailureIcon = savedInstanceState.getBoolean(KEY_SHOW_FAILURE_ICON, true)
+        arguments?.run {
+        tasks = getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
+        layoutContent = getInt(
+            KEY_LAYOUT_CONTENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        playTime = getInt(KEY_PLAY_TIME)
+        resetPlayTime = getInt(KEY_PLAY_TIME)
+        repeatTimes = getInt(KEY_REPEAT_TIMES)
+        volumePercent = getInt(KEY_VOLUME)
+        isPreload = getBoolean(KEY_PRELOAD, false)
+        showLoadingIcon = getBoolean(KEY_SHOW_LOADING_ICON, true)
+        showFailureIcon = getBoolean(KEY_SHOW_FAILURE_ICON, true)
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelableArrayList(KEY_TASKS, tasks)
-        outState.putInt(KEY_LAYOUT_CONTENT, layoutContent)
-        outState.putInt(KEY_PLAY_TIME, playTime)
-        outState.putInt(KEY_REPEAT_TIMES, repeatTimes)
-        outState.putInt(KEY_VOLUME, volumePercent)
-        outState.putBoolean(KEY_PRELOAD, isPreload)
-        outState.putBoolean(KEY_SHOW_LOADING_ICON, showLoadingIcon)
-        outState.putBoolean(KEY_SHOW_FAILURE_ICON, showFailureIcon)
     }
 
     override fun onCreateView(

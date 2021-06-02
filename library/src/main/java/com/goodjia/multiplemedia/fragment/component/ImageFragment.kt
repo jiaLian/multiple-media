@@ -67,10 +67,7 @@ class ImageFragment : PlayTimeMediaFragment() {
     private var showFailureIcon = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        savedInstanceState?.let {
-            showLoadingIcon = it.getBoolean(KEY_SHOW_LOADING_ICON)
-            showFailureIcon = it.getBoolean(KEY_SHOW_FAILURE_ICON)
-        } ?: arguments?.let {
+        arguments?.let {
             showLoadingIcon = it.getBoolean(KEY_SHOW_LOADING_ICON)
             showFailureIcon = it.getBoolean(KEY_SHOW_FAILURE_ICON)
         }
@@ -80,12 +77,6 @@ class ImageFragment : PlayTimeMediaFragment() {
             )
             else Fresco.initialize(context)
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(KEY_SHOW_FAILURE_ICON, showFailureIcon)
-        outState.putBoolean(KEY_SHOW_LOADING_ICON, showLoadingIcon)
     }
 
     override fun onCreateView(
