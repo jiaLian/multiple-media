@@ -8,7 +8,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.21.0'
     }
 }
 
@@ -19,6 +18,9 @@ allprojects {
         maven { url "https://jitpack.io" }
         maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
         maven { url "https://goodjia.jfrog.io/artifactory/goodjia" }
+        maven {
+            url 'https://pkgs.dev.azure.com/goodjialian/lib/_packaging/gj/maven/v1'
+        }
     }
 }
 

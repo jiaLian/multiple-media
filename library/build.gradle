@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'maven-publish'
 
-def verCode = 65
-def verName = "2.3.0-alpha01"
-
+def verCode = 66
+def verName = "2.3.0"
+def group = 'com.goodjia'
+def artif = 'multiplemedia'
 androidExtensions {
     experimental = true
 }
@@ -61,8 +61,8 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 publishing {
     publications {
         aar(MavenPublication) {
-            groupId = 'com.goodjia'
-            artifactId = 'multiplemedia'
+            groupId = group
+            artifactId = artif
             version = verName
             artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
             pom.withXml {
@@ -98,27 +98,14 @@ publishing {
             }
         }
     }
-}
 
-artifactoryPublish {
-    publications(publishing.publications.aar)
-}
-artifactoryPublish.dependsOn('assembleRelease')
-artifactory {
-    contextUrl = 'https://goodjia.jfrog.io/artifactory'
-    publish {
-        repository {
-            repoKey = 'goodjia' // The Artifactory repository key to publish to
-            username = properties.getProperty('jforg.user') // The publisher user name
-            password = properties.getProperty('jforg.pwdkey') // The publisher password
-
-        }
-        defaults {
-            publications('aar')
-            publishArtifacts = true
-            // Properties to be attached to the published artifacts.
-            properties = ['qa.level': 'basic', 'dev.team': 'core']
-            publishPom = true // Publish generated POM files to Artifactory (true by default)
+    repositories {
+        maven {
+            url properties.getProperty('azure.url')
+            credentials {
+                username properties.getProperty('azure.feed')
+                password properties.getProperty('azure.token')
+            }
         }
     }
 }
