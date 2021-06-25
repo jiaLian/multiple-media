@@ -49,6 +49,6 @@ dependencies {
 //        exclude group: 'com.goodjia', module: 'utility'
 //    }
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.goodjia:utility:1.3.12'
+    implementation 'com.goodjia:utility:1.3.13'
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
 }
