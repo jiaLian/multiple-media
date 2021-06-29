@@ -1,6 +1,4 @@
-[![Download](https://api.bintray.com/packages/jialian/goodJia/multiplemedia/images/download.svg) ](https://bintray.com/jialian/goodJia/multiplemedia/_latestVersion)
-[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-
+[![com.goodjia:multiplemedia package in gj feed in Azure Artifacts](https://feeds.dev.azure.com/goodjialian/db3d441d-f9cb-441e-9edc-acab8f7bb4fa/_apis/public/Packaging/Feeds/911ee5c1-df21-4a56-a486-b41525ee9d42/Packages/044e8b05-3d7c-4abc-824f-647d5e8bcd6b/Badge)](https://dev.azure.com/goodjialian/lib/_packaging?_a=package&feed=911ee5c1-df21-4a56-a486-b41525ee9d42&package=044e8b05-3d7c-4abc-824f-647d5e8bcd6b&preferRelease=true)
 # Multiple Media Component
 The library can play photo, video, youtube and custom fragment.
 It is fragment player.

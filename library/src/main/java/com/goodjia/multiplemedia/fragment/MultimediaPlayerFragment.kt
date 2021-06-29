@@ -118,18 +118,18 @@ open class MultimediaPlayerFragment : Fragment(), MediaFragment.MediaCallback,
         super.onCreate(savedInstanceState)
         Logger.d(TAG, "onCreate: ")
         arguments?.run {
-        tasks = getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
-        layoutContent = getInt(
-            KEY_LAYOUT_CONTENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        playTime = getInt(KEY_PLAY_TIME)
-        resetPlayTime = getInt(KEY_PLAY_TIME)
-        repeatTimes = getInt(KEY_REPEAT_TIMES)
-        volumePercent = getInt(KEY_VOLUME)
-        isPreload = getBoolean(KEY_PRELOAD, false)
-        showLoadingIcon = getBoolean(KEY_SHOW_LOADING_ICON, true)
-        showFailureIcon = getBoolean(KEY_SHOW_FAILURE_ICON, true)
+            tasks = getParcelableArrayList(KEY_TASKS) ?: arrayListOf()
+            layoutContent = getInt(
+                KEY_LAYOUT_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            playTime = getInt(KEY_PLAY_TIME)
+            resetPlayTime = getInt(KEY_PLAY_TIME)
+            repeatTimes = getInt(KEY_REPEAT_TIMES)
+            volumePercent = getInt(KEY_VOLUME)
+            isPreload = getBoolean(KEY_PRELOAD, false)
+            showLoadingIcon = getBoolean(KEY_SHOW_LOADING_ICON, true)
+            showFailureIcon = getBoolean(KEY_SHOW_FAILURE_ICON, true)
         }
     }
 
